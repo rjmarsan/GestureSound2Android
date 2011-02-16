@@ -8,7 +8,8 @@ public class InstrumentManager {
 	HashMap<String, Class<Instrument>> possibleInstruments;
 	
 	public void setNewParameters(double[] paramvector) {
-		currentInstrument.updateParameters(paramvector);
+		if (currentInstrument != null) 
+			currentInstrument.updateParameters(paramvector);
 	}
 	
 	public Parameter[] getInstrumentParameters() {

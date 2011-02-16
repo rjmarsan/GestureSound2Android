@@ -1,6 +1,6 @@
 package com.rj.research.uiuc.gesturesound.extractors;
 
-import com.rj.research.uiuc.multitouch.Cursor;
+import com.rj.processing.mt.Cursor;
 
 public class ExtractorManager {
 	

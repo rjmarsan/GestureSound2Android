@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     >
 
-	<com.rj.research.uiuc.gesturesound.android.HIDViewController
+	<com.rj.research.uiuc.gesturesound.android.HUDViewController
 		android:id="@+id/hid"
 		android:layout_width="300dip"
 		android:layout_height="fill_parent"
@@ -44,8 +44,10 @@
 		
 		<com.rj.research.uiuc.gesturesound.android.InstrumentViewController
 			android:id="@+id/instrument_settings"
-			android:layout_width="100dip"
-			android:layout_height="100dip"
+			android:layout_width="fill_parent"
+			android:layout_height="150dip"
+			android:background="#44990011"
+			android:layout_below="@id/weka_controls"
 		/>
 		
 		
@@ -61,5 +63,5 @@
 		
 		
 		
-	</com.rj.research.uiuc.gesturesound.android.HIDViewController>
+	</com.rj.research.uiuc.gesturesound.android.HUDViewController>
 </com.rj.research.uiuc.gesturesound.android.WekaInstrumentViewController>

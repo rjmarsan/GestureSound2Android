@@ -2,17 +2,11 @@ package com.rj.research.uiuc.gesturesound;
 
 import java.io.File;
 
-import processing.core.PApplet;
-import wekinator.controller.WekinatorManager;
-
-import com.rj.research.uiuc.gesturesound.android.WekaInstrumentViewController;
+import com.rj.processing.mt.Cursor;
+import com.rj.processing.mt.TouchListener;
 import com.rj.research.uiuc.gesturesound.audio.AudioManager;
 import com.rj.research.uiuc.gesturesound.audio.instruments.InstrumentManager;
-import com.rj.research.uiuc.gesturesound.canvas.CanvasController;
 import com.rj.research.uiuc.gesturesound.extractors.ExtractorManager;
-import com.rj.research.uiuc.gesturesound.hid.HIDController;
-import com.rj.research.uiuc.multitouch.Cursor;
-import com.rj.research.uiuc.multitouch.TouchListener;
 
 public class WekaInstrument implements TouchListener  {
 	public final static int NOTHING = 0;
@@ -24,17 +18,18 @@ public class WekaInstrument implements TouchListener  {
 	
 	/** The core components of a WekaInstrument **/
 	/** all of these are UI independent (hopefully) **/
-	public WekinatorManager wekamanager;
+//	public WekinatorManager wekamanager;
 	public AudioManager audiomanager;
 	public ExtractorManager extractormanager;
 	public InstrumentManager instrument;
 	
 	
-	/** this is UI dependent **/
-	public CanvasController canvas;
-	public HIDController hid;
-	public WekaInstrumentViewController wekaview;
 	
+	public WekaInstrument() {
+		this.extractormanager = new ExtractorManager();
+		this.instrument = new InstrumentManager();
+		this.audiomanager = new AudioManager();
+	}
 	
 	
 	public void setup() {
@@ -91,13 +86,28 @@ public class WekaInstrument implements TouchListener  {
 	public void touchMoved(Cursor c) {
 		updateGenerator(c);
 	}
+	@Override
+	public void touchAllUp(Cursor c) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
+	
+	
+	
+	/**
+	 * Honestly, this is the biggest function in here.
+	 * 
+	 */
 	public void updateGenerator(Cursor c) {
 		double[] featurevector = extractormanager.makeFeatureVector(c);
-		double[] paramvector = wekamanager.classify(featurevector);
+		double[] paramvector = featurevector;//wekamanager.classify(featurevector);
 		instrument.setNewParameters(paramvector);
 	}
+
+
+	
 	
 	
 	
