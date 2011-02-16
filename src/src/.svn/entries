@@ -1,0 +1,37 @@
+8
+
+dir
+184
+http://wekinator.googlecode.com/svn/trunk/project/java/Wekinator/src
+http://wekinator.googlecode.com/svn
+
+
+
+2011-02-11T01:47:35.799618Z
+184
+rebecca.fiebrink
+has-props
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+be46f6d2-b861-11de-b71e-ab0a53e69959
+
+tmp
+dir
+
+wekinator
+dir
+
+drawing
+dir
+

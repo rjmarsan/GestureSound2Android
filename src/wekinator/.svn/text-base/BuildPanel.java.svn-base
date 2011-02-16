@@ -1,0 +1,739 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * BuildPanel.java
+ *
+ * Created on Dec 6, 2009, 9:53:26 PM
+ */
+package wekinator;
+
+import java.awt.event.ItemEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import wekinator.Plog.Msg;
+import wekinator.WekinatorLearningManager.Mode;
+
+/**
+ *
+ * @author rebecca
+ */
+public class BuildPanel extends javax.swing.JPanel {
+
+    int numParams = 0;
+    ParameterMiniPanel[] paramPanels = null;
+    SimpleDataset dataset = null;
+    boolean isRecording = false;
+    boolean isPlayalongJava = false;
+    boolean isPlayalongChuck = false;
+    LearningSystem learningSystem = null;
+    PropertyChangeListener scoreChangeListener = new PropertyChangeListener() {
+
+        public void propertyChange(PropertyChangeEvent evt) {
+            scorePropertyChanged(evt);
+        }
+    };
+    PropertyChangeListener lsDatasetChangeListener = new PropertyChangeListener() {
+
+        public void propertyChange(PropertyChangeEvent evt) {
+            lsDatasetChanged(evt);
+        }
+    };
+    ChangeListener datasetChangeListener = new ChangeListener() {
+
+        public void stateChanged(ChangeEvent e) {
+            datasetChanged(e);
+        }
+    };
+    ChangeListener paramsChangeListener = new ChangeListener() {
+
+        public void stateChanged(ChangeEvent e) {
+            paramsChanged(e);
+        }
+    };
+
+    /** Creates new form BuildPanel */
+    public BuildPanel() {
+        initComponents();
+        WekinatorLearningManager.getInstance().addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+                learningManagerChange(evt);
+            }
+        });
+
+        WekinatorInstance.getWekinatorInstance().addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+                wekinatorInstanceChange(evt);
+            }
+        });
+
+        updateScoreListener(null, WekinatorInstance.getWekinatorInstance().getPlayalongScore());
+
+
+    }
+
+    private void updateScoreListener(PlayalongScore o, PlayalongScore n) {
+        if (o != null) {
+            o.removePropertyChangeListener(scoreChangeListener);
+        }
+
+        if (n != null) {
+            n.addPropertyChangeListener(scoreChangeListener);
+        }
+
+    }
+
+    private void wekinatorInstanceChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(WekinatorInstance.PROP_PLAYALONGSCORE)) {
+            updateScoreListener((PlayalongScore) evt.getOldValue(), (PlayalongScore) evt.getNewValue());
+        }
+    }
+
+    void setLearningSystem(LearningSystem ls) {
+        if (learningSystem == ls) {
+            return;
+        }
+
+        if (learningSystem != null) { //remove prior listeners
+            if (paramPanels != null) {
+                for (int i = 0; i < paramPanels.length; i++) {
+                    paramPanels[i].removeChangeListener(paramsChangeListener);
+                }
+            }
+            if (dataset != null) {
+                dataset.removeChangeListener(datasetChangeListener);
+            }
+
+            // WekinatorInstance.getWekinatorInstance().getPlayalongScore().removePropertyChangeListener(scoreChangeListener);
+            learningSystem.removePropertyChangeListener(lsDatasetChangeListener);
+        }
+
+
+        //Configure params pane
+        if (ls == null) {
+            return;
+        }
+
+        this.learningSystem = ls;
+        numParams = ls.getNumParams();
+        panelBuildParams.removeAll();
+        paramPanels = new ParameterMiniPanel[numParams];
+
+        dataset = ls.getDataset();
+        if (dataset != null) {
+            dataset.addChangeListener(datasetChangeListener);
+            updateForDataset();
+        }
+
+        //   learningSystem.getScore().addPropertyChangeListener(scoreChangeListener);
+        ls.addPropertyChangeListener(lsDatasetChangeListener); //TODO: why a dataset listener on ls ? w/ no dataset prop name check?
+
+        for (int i = 0; i < numParams; i++) {
+            paramPanels[i] = new ParameterMiniPanel(
+                    dataset.getParameterName(i),
+                    0.0,
+                    dataset.maxLegalDiscreteParamValue(i),
+                    dataset.isParameterDiscrete(i),
+                    true);
+            panelBuildParams.add(paramPanels[i]);
+            paramPanels[i].addChangeListener(paramsChangeListener);
+        }
+
+        updateButtons();
+    }
+
+    void updatePlayalongMessage(String string) {
+        labelPlayalongUpdate.setText(string); //yikes get rid of this.
+    }
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jComboBox1 = new javax.swing.JComboBox();
+        jButton1 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        comboSynthAction = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
+        scrollTrainPanel = new javax.swing.JScrollPane();
+        panelBuildParams = new javax.swing.JPanel();
+        buttonSynthPlay = new javax.swing.JButton();
+        buttonAddClipboard = new javax.swing.JButton();
+        buttonAddClipboard1 = new javax.swing.JButton();
+        jPanel6 = new javax.swing.JPanel();
+        buttonRecord = new javax.swing.JButton();
+        jPanel7 = new javax.swing.JPanel();
+        labelNumExamples = new javax.swing.JLabel();
+        jButton8 = new javax.swing.JButton();
+        buttonForget = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        labelPlayalongUpdate = new javax.swing.JLabel();
+        comboChooseScore = new javax.swing.JComboBox();
+        buttonPlayScore = new javax.swing.JButton();
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jButton1.setText("jButton1");
+
+        setMinimumSize(new java.awt.Dimension(482, 500));
+        setPreferredSize(new java.awt.Dimension(482, 700));
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Set parameter values"));
+
+        comboSynthAction.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "play these parameters", "send its parameters here", "play these parameters on demand", "do nothing" }));
+        comboSynthAction.setSelectedIndex(2);
+        comboSynthAction.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                comboSynthActionItemStateChanged(evt);
+            }
+        });
+        comboSynthAction.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboSynthActionActionPerformed(evt);
+            }
+        });
+        comboSynthAction.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                comboSynthActionPropertyChange(evt);
+            }
+        });
+
+        jLabel1.setText("My synth should:");
+
+        panelBuildParams.setLayout(new javax.swing.BoxLayout(panelBuildParams, javax.swing.BoxLayout.Y_AXIS));
+        scrollTrainPanel.setViewportView(panelBuildParams);
+
+        buttonSynthPlay.setText("play");
+        buttonSynthPlay.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonSynthPlayActionPerformed(evt);
+            }
+        });
+
+        buttonAddClipboard.setText("add to parameter clipboard");
+        buttonAddClipboard.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAddClipboardActionPerformed(evt);
+            }
+        });
+
+        buttonAddClipboard1.setText("view clipboard");
+        buttonAddClipboard1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonAddClipboard1ActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(scrollTrainPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+            .add(jPanel2Layout.createSequentialGroup()
+                .add(jLabel1)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(comboSynthAction, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(buttonSynthPlay)
+                .addContainerGap())
+            .add(jPanel2Layout.createSequentialGroup()
+                .add(buttonAddClipboard)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(buttonAddClipboard1)
+                .addContainerGap(114, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel2Layout.createSequentialGroup()
+                .add(scrollTrainPanel, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(buttonAddClipboard)
+                    .add(buttonAddClipboard1))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel1)
+                    .add(comboSynthAction, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(buttonSynthPlay))
+                .addContainerGap())
+        );
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder("Record feature/parameter values"));
+
+        buttonRecord.setText("Begin recording examples into dataset");
+        buttonRecord.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonRecordActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel6Layout = new org.jdesktop.layout.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, buttonRecord, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel6Layout.createSequentialGroup()
+                .add(buttonRecord, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 66, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Manage recorded examples"));
+
+        labelNumExamples.setText("0 examples recorded");
+
+        jButton8.setText("View examples");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
+        buttonForget.setText("Clear examples");
+        buttonForget.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonForgetActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel7Layout = new org.jdesktop.layout.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel7Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(labelNumExamples)
+                    .add(jPanel7Layout.createSequentialGroup()
+                        .add(jButton8)
+                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                        .add(buttonForget)))
+                .addContainerGap(174, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel7Layout.createSequentialGroup()
+                .add(labelNumExamples)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel7Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jButton8)
+                    .add(buttonForget)))
+        );
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Playalong parameter collection"));
+
+        labelPlayalongUpdate.setText("    ");
+
+        comboChooseScore.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Play score from parameter clipboard", "Play ChucK score" }));
+        comboChooseScore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboChooseScoreActionPerformed(evt);
+            }
+        });
+
+        buttonPlayScore.setText("Start score");
+        buttonPlayScore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonPlayScoreActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(buttonPlayScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 171, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(comboChooseScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(labelPlayalongUpdate, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .add(comboChooseScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(5, 5, 5)
+                .add(buttonPlayScore, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 29, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(labelPlayalongUpdate))
+        );
+
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
+                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(jPanel7, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel6, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel6, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel7, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void startMeListenToSynth() {
+        OscHandler.getOscHandler().startGettingParams();
+    }
+
+    private void stopMeListenToSynth() {
+        OscHandler.getOscHandler().stopGettingParams();
+    }
+
+    private void startSynthListenToMe() {
+        //Turn sound on
+        OscHandler.getOscHandler().startSound();
+        //OscHandler.getOscHandler().sendParamsToSynth(getParams()); //TODO: want dist when appropriate
+        OscHandler.getOscHandler().packageDistAndSendParamsToSynth(getParams());
+    }
+
+    private void stopSynthListenToMe() {
+        //nothing to do
+    }
+
+    private void comboSynthActionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboSynthActionActionPerformed
+}//GEN-LAST:event_comboSynthActionActionPerformed
+
+    private void buttonAddClipboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddClipboardActionPerformed
+        if (WekinatorInstance.getWekinatorInstance().getPlayalongScore() != null) {
+            WekinatorInstance.getWekinatorInstance().getPlayalongScore().addParams(getParams(), 1.0); //Just want params
+        }
+
+        if (WekinatorRunner.isLogging()) {
+            Plog.log(Msg.PARAM_CLIPBOARD_ADDED_IN_PANEL);
+        }
+}//GEN-LAST:event_buttonAddClipboardActionPerformed
+
+    private void buttonRecordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonRecordActionPerformed
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }//GEN-LAST:event_buttonRecordActionPerformed
+
+    private void buttonAddClipboard1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonAddClipboard1ActionPerformed
+        if (WekinatorInstance.getWekinatorInstance().getPlayalongScore() != null) {
+            WekinatorInstance.getWekinatorInstance().getPlayalongScore().view();
+        }
+        if (WekinatorRunner.isLogging()) {
+            Plog.log(Msg.PARAM_CLIPBOARD_VIEWED);
+        }
+    }//GEN-LAST:event_buttonAddClipboard1ActionPerformed
+
+    private void comboSynthActionPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_comboSynthActionPropertyChange
+    }//GEN-LAST:event_comboSynthActionPropertyChange
+
+    private void comboSynthActionItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboSynthActionItemStateChanged
+        //TODO low priority: improve efficiency by only listening to pram panel
+        //state changes when we want synth to immediately update
+        //Will have to manage listeners when we change learning system as well
+        //as changing combo...
+        Object o = evt.getItem();
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+
+            buttonSynthPlay.setVisible(o == comboSynthAction.getItemAt(2));
+
+            if (o == comboSynthAction.getItemAt(0)) {
+                startSynthListenToMe();
+            } else if (o == comboSynthAction.getItemAt(1)) {
+                startMeListenToSynth();
+
+            }
+        } else if (evt.getStateChange() == ItemEvent.DESELECTED) {
+            if (o == comboSynthAction.getItemAt(0)) {
+                stopSynthListenToMe();
+            } else if (o == comboSynthAction.getItemAt(1)) {
+                stopMeListenToSynth();
+
+            }
+        }
+    }//GEN-LAST:event_comboSynthActionItemStateChanged
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        learningSystem.getDataset().showViewer();
+        if (WekinatorRunner.isLogging()) {
+            Plog.log(Msg.DATA_VIEWER_OPENED);
+        }
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void buttonSynthPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSynthPlayActionPerformed
+        OscHandler.getOscHandler().startSound();
+       // OscHandler.getOscHandler().sendParamsToSynth(getParams()); //TODO: want dist
+         OscHandler.getOscHandler().packageDistAndSendParamsToSynth(getParams());
+        if (WekinatorRunner.isLogging()) {
+            Plog.log(Msg.BUTTON_PLAY_HIT);
+        }
+    }//GEN-LAST:event_buttonSynthPlayActionPerformed
+
+    private void buttonForgetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonForgetActionPerformed
+        learningSystem.getDataset().deleteAll();
+        if (WekinatorRunner.isLogging()) {
+            Plog.log(Msg.DATASET_CLEARED);
+        }
+    }//GEN-LAST:event_buttonForgetActionPerformed
+
+    private void buttonPlayScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonPlayScoreActionPerformed
+        boolean useJavaScore = (comboChooseScore.getSelectedIndex() == 0);
+
+        if (isPlayalongJava) {
+            stopPlayalongJava();
+            if (WekinatorRunner.isLogging()) {
+                Plog.log(Msg.BUTTON_PLAYALONG_STOP);
+            }
+        } else if (isPlayalongChuck) {
+            stopPlayalongChuck();
+        } else if (useJavaScore) {
+            startPlayalongJava();
+            if (WekinatorRunner.isLogging()) {
+                Plog.log(Msg.BUTTON_PLAYALONG_START);
+            }
+
+        } else {
+            //Set combo box appropriately: Must be getting from synth for this to work
+            int selected = comboSynthAction.getSelectedIndex();
+            if (selected != 1) {
+                comboSynthAction.setSelectedIndex(1);
+            }
+
+            startPlayalongChuck();
+        }
+    }//GEN-LAST:event_buttonPlayScoreActionPerformed
+
+    private void comboChooseScoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboChooseScoreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboChooseScoreActionPerformed
+
+    private void startPlayalongJava() {
+        if (WekinatorInstance.getWekinatorInstance().getPlayalongScore() != null) {
+            WekinatorInstance.getWekinatorInstance().getPlayalongScore().play();
+        }
+    }
+
+    private void startPlayalongChuck() {
+        OscHandler.getOscHandler().setBuildPanel(this); //TODO total hack get rid of this
+        OscHandler.getOscHandler().playScore();
+        setButtonPlayalong(true); //TODO: enable this to happen somewhere else? have playalong state somewhere outside gui!
+        isPlayalongChuck = true;
+        startMeListenToSynth();
+    }
+
+    private void stopPlayalongJava() {
+        if (WekinatorInstance.getWekinatorInstance().getPlayalongScore() != null) {
+            WekinatorInstance.getWekinatorInstance().getPlayalongScore().stop();
+        }
+    }
+
+    private void stopPlayalongChuck() {
+        OscHandler.getOscHandler().stopPlayback();
+        setButtonPlayalong(false);
+        isPlayalongChuck = false;
+       // stopMeListenToSynth();
+    }
+
+    private void startRecording() {
+        try {
+            //Error here?
+            WekinatorLearningManager.getInstance().startDatasetCreation();
+            WekinatorLearningManager.getInstance().setParamsAndMask(getParams(), getMask());
+        } catch (Exception ex) {
+            System.out.println("log this bp: can't start dataset creation");
+        }
+    }
+
+    private void stopRecording() {
+        WekinatorLearningManager.getInstance().stopDatasetCreation();
+    }
+
+    //Issue: Do we want params or distribution (when appropriate)???
+    private double[] getParams() {
+        double[] p = new double[numParams];
+        for (int i = 0; i < paramPanels.length; i++) {
+            p[i] = paramPanels[i].getVal();
+        }
+        return p;
+    }
+
+    public boolean[] getMask() {
+        boolean[] m = new boolean[numParams];
+        // System.out.println("mask:"); //inf loop here!
+        for (int i = 0; i < paramPanels.length; i++) {
+            m[i] = paramPanels[i].getUse();
+            System.out.println(m[i]);
+        }
+        return m;
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonAddClipboard;
+    private javax.swing.JButton buttonAddClipboard1;
+    private javax.swing.JButton buttonForget;
+    private javax.swing.JButton buttonPlayScore;
+    private javax.swing.JButton buttonRecord;
+    private javax.swing.JButton buttonSynthPlay;
+    private javax.swing.JComboBox comboChooseScore;
+    private javax.swing.JComboBox comboSynthAction;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton8;
+    private javax.swing.JComboBox jComboBox1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JLabel labelNumExamples;
+    private javax.swing.JLabel labelPlayalongUpdate;
+    private javax.swing.JPanel panelBuildParams;
+    private javax.swing.JScrollPane scrollTrainPanel;
+    // End of variables declaration//GEN-END:variables
+
+    //a property of the dataset has changed
+    private void datasetChanged(ChangeEvent e) {
+        updateForDataset();
+    }
+
+    //the dataset object used by ls is new
+    private void lsDatasetChanged(PropertyChangeEvent evt) {
+        //update?DSdfasdfadsf
+        if (dataset != null) {
+            dataset.removeChangeListener(datasetChangeListener);
+        }
+
+        dataset = learningSystem.getDataset();
+        if (dataset != null) {
+            dataset.addChangeListener(datasetChangeListener);
+            updateForDataset();
+        }
+    }
+
+    private void updateForDataset() {
+        int numData = dataset.getNumDatapoints();
+        labelNumExamples.setText(numData + " examples recorded");
+        buttonForget.setEnabled(numData != 0);
+    }
+
+    protected void updateButtons() {
+        Mode m = WekinatorLearningManager.getInstance().getMode();
+
+        buttonRecord.setEnabled(learningSystem != null && m != Mode.EVALUATING && m != Mode.RUNNING && m != Mode.TRAINING);
+
+        setButtonRecording(m == Mode.DATASET_CREATION);
+
+    }
+
+    private void learningManagerChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(WekinatorLearningManager.PROP_MODE)) {
+            WekinatorLearningManager.Mode m = WekinatorLearningManager.getInstance().getMode();
+            updateButtons();
+        // setButtonRecording(m == Mode.DATASET_CREATION);
+        // setButtonRecordingEnable(m != Mode.RUNNING && m != Mode.TRAINING && m != Mode.EVALUATING);
+
+        } else if (evt.getPropertyName().equals(WekinatorLearningManager.PROP_PARAMS)) {
+            //   if (comboSynthAction.getSelectedIndex() == 1) {
+            //Listen
+            setParams(WekinatorLearningManager.getInstance().getParams());
+        //Send out via osc
+        //TODO
+        //  }
+        }
+    }
+
+    private void setButtonPlayalong(boolean y) {
+        if (y) {
+            buttonPlayScore.setText("Stop playing score");
+        // buttonRecord.setBackground(Color.RED); : TODO: overide LAF
+        } else {
+            buttonPlayScore.setText("Start playing score");
+        }
+    }
+
+    private void setButtonRecording(boolean recording) {
+        if (recording) {
+            buttonRecord.setText("Stop recording");
+            isRecording = true;
+        } else {
+            buttonRecord.setText("Begin recording examples into dataset");
+            isRecording = false;
+        }
+    }
+
+    //The user has entered in new parameter values in the minipanes
+    //This is coming from minipanels ONLY
+    private void paramsChanged(ChangeEvent e) {
+        double[] p = getParams(); //want params
+        boolean[] b = getMask();
+        if (comboSynthAction.getSelectedIndex() == 0) {
+            //Listen
+
+            //Send out via osc
+
+//            OscHandler.getOscHandler().sendParamsToSynth(getParams()); //TODO: want to send dist.
+             OscHandler.getOscHandler().packageDistAndSendParamsToSynth(getParams());
+            System.out.println("Sending params...");
+        }
+        //Propogate changes to LM
+        WekinatorLearningManager.getInstance().setParamsAndMask(p, b);
+    }
+
+    private void setParams(double[] p) {
+        if (p == null) {
+            System.out.println("***! p is null");
+            return;
+        }
+        if (paramPanels == null) {
+            System.out.println("***! paramPanels is null");
+            return;
+        }
+        if (p.length != paramPanels.length) {
+            //   System.out.println("***! plenght is " + p.length + ", paramPanels length is " + paramPanels.length);
+            return;
+        }
+        for (int i = 0; i < paramPanels.length; i++) {
+            if (paramPanels[i] == null) {
+                System.out.println("***! paramPanels[" + i + "] is null");
+                return;
+            }
+            /*  if (p[i] == null) {
+            System.out.println("***! p[" + i + "] is null");
+            } */
+            paramPanels[i].setValue(p[i]); //TODO TODO TODO: Getting null pointer exception here after learning manager change (post learningmanager.SetParams(...))
+        }
+    }
+
+    private void scorePropertyChanged(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(PlayalongScore.PROP_ISPLAYING)) {
+            boolean playing = WekinatorInstance.getWekinatorInstance().getPlayalongScore().isPlaying();
+            setButtonPlayalong(playing);
+            isPlayalongJava = playing;
+
+        }
+    }
+}

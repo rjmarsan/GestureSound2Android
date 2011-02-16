@@ -1,0 +1,149 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/!svn/ver/174/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms
+END
+SMOSettingsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/SMOSettingsPanel.java
+END
+NNLearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/!svn/ver/174/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/NNLearningAlgorithm.java
+END
+HmmSettingsPanel.form
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/HmmSettingsPanel.form
+END
+IbkSettingsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/IbkSettingsPanel.java
+END
+J48SettingsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/J48SettingsPanel.java
+END
+LearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/!svn/ver/168/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/LearningAlgorithm.java
+END
+LearningAlgorithmSettingsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/LearningAlgorithmSettingsPanel.java
+END
+HmmLearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/168/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/HmmLearningAlgorithm.java
+END
+OtherClassifierSettingsPanel.form
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/OtherClassifierSettingsPanel.form
+END
+ClassifierLearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/168/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/ClassifierLearningAlgorithm.java
+END
+NNSettingsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/NNSettingsPanel.java
+END
+AdaboostM1SettingsPanel.form
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/!svn/ver/165/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/AdaboostM1SettingsPanel.form
+END
+OtherClassifierLearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/!svn/ver/168/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/OtherClassifierLearningAlgorithm.java
+END
+SMOSettingsPanel.form
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/SMOSettingsPanel.form
+END
+AdaboostM1LearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/!svn/ver/168/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/AdaboostM1LearningAlgorithm.java
+END
+HmmSettingsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/HmmSettingsPanel.java
+END
+SMOLearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/168/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/SMOLearningAlgorithm.java
+END
+OtherClassifierSettingsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/OtherClassifierSettingsPanel.java
+END
+IbkSettingsPanel.form
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/IbkSettingsPanel.form
+END
+J48SettingsPanel.form
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/J48SettingsPanel.form
+END
+AdaboostM1SettingsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/!svn/ver/165/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/AdaboostM1SettingsPanel.java
+END
+J48LearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/168/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/J48LearningAlgorithm.java
+END
+IbkLearningAlgorithm.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/!svn/ver/168/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/IbkLearningAlgorithm.java
+END
+NNSettingsPanel.form
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/!svn/ver/144/trunk/project/java/Wekinator/src/wekinator/LearningAlgorithms/NNSettingsPanel.form
+END
