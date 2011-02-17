@@ -43,7 +43,7 @@ public class InstrumentViewController extends LinearLayout implements SettingsCh
 	public void updateParams(Instrument instrument, Parameter[] params) {
 		if (settingsBoxes == null) return;
 		for (int i=0; i<settingsBoxes.length; i++) {
-			settingsBoxes[i].setValue(params[i].getValue());
+			settingsBoxes[i].setValue(params[i].getValue() - params[i].getMin());
 		}
 	}
 

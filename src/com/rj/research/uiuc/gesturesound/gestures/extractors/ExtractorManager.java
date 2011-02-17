@@ -1,16 +1,34 @@
 package com.rj.research.uiuc.gesturesound.gestures.extractors;
 
-import com.rj.processing.mt.Cursor;
+import java.util.HashMap;
 
-public class ExtractorManager {
+import com.rj.processing.mt.Cursor;
+import com.rj.research.uiuc.gesturesound.gestures.generators.FeatureBox;
+
+public class ExtractorManager {	
 	
-	FeatureExtractor extractor;
-	FeatureGenerator[] generators;
+	HashMap<Cursor, FeatureBox> featureboxMap;
 	
-	
-	public double[] makeFeatureVector(Cursor c) {
-		return null;
+	public ExtractorManager() {
+		featureboxMap = new HashMap<Cursor, FeatureBox>();
 	}
 	
+	public double[] makeFeatureVector(Cursor c) {
+		if (featureboxMap.containsKey(c)) {
+			return featureboxMap.get(c).makeFeatureVector(c);
+		} else {
+			featureboxMap.put(c, new FeatureBox(c));
+			return featureboxMap.get(c).makeFeatureVector(c);
+		}
+	}
+	
+	
+	public void touchDown(Cursor c) {
+		featureboxMap.put(c, new FeatureBox(c));
+	}
+	
+	public void touchUp(Cursor c) {
+		featureboxMap.remove(c);
+	}
 	
 }

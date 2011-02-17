@@ -108,5 +108,27 @@ public class Parameter {
 		}
 		return -1;
 	}
+	
+	public float getMin() {
+		if (type == CONTINUOUS) {
+			return this.cont_min;
+		}
+		return 0; //otherwise 0 is the minimum
+	}
+	
+	public float getMax() {
+		if (type == CONTINUOUS) {
+			return this.cont_max;
+		}
+		else if (type == SELECTOR) {
+			return this.selector_max;
+		}
+		else {
+			if (values != null) {
+				return this.values.length;
+			}
+		}
+		return -1;//error!
+	}
 
 }

@@ -2,6 +2,8 @@ package com.rj.research.uiuc.gesturesound;
 
 import java.io.File;
 
+import android.util.Log;
+
 import com.rj.processing.mt.Cursor;
 import com.rj.processing.mt.TouchListener;
 import com.rj.research.uiuc.gesturesound.audio.AudioManager;
@@ -88,9 +90,11 @@ public class WekaInstrument implements TouchListener  {
 	 *                                                             SOUND!
 	 */
 	public void touchDown(Cursor c) {
+		extractormanager.touchDown(c);
 		updateGenerator(c);
 	}
 	public void touchUp(Cursor c) {
+		extractormanager.touchUp(c);
 		updateGenerator(c);
 	}
 	public void touchMoved(Cursor c) {
@@ -121,7 +125,9 @@ public class WekaInstrument implements TouchListener  {
 	 * 
 	 */
 	public void updateGenerator(Cursor c) {
-		double[] featurevector = new double[] {c.currentPoint.x/1000, c.currentPoint.y/1000};//extractormanager.makeFeatureVector(c);
+		double[] featurevector = extractormanager.makeFeatureVector(c);
+		if (featurevector == null) return; //something went wrong. return now!
+		
 		double[] paramvector = featurevector;//wekamanager.classify(featurevector);
 		instrument.setNewParameters(paramvector);
 		eventmanager.fireWekaClassifyEvent(paramvector);

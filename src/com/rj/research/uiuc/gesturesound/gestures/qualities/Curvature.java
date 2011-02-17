@@ -6,35 +6,31 @@ import java.util.List;
 import Jama.Matrix;
 
 import com.rj.processing.mt.Cursor;
+import com.rj.processing.mt.Point;
 import com.rj.research.uiuc.filters.KalmanFilter;
 import com.rj.research.uiuc.gesturesound.gestures.Geometry;
-import com.rj.research.uiuc.gesturesound.gestures.GestureEngine;
+import com.rj.research.uiuc.gesturesound.gestures.extractors.FeatureMap;
 
 public class Curvature extends Quality {
 	public static String name="curvature";
-	
-	KalmanFilter filter;
+
+//	KalmanFilter filter;
 	
 	double currentValue=0f;
 	ArrayList<double[]> pastValues;
 
 	
-	public static Quality cursorDetected(GestureEngine engine) {
-		return new Curvature(engine);
-	}
-	
-	
-	public Curvature(GestureEngine engine) {
-		super(engine);
+	public Curvature() {
+		type = FeatureMap.CURV;
 		pastValues = new ArrayList<double[]>();
-		filter = KalmanFilter.buildKF(0.2, 5, 10);
-		filter.setX(new Matrix(new double[][]{{0.01}, {0.01}, {0.01}}));
-		filter.predict();
+//		filter = KalmanFilter.buildKF(0.2, 5, 10);
+//		filter.setX(new Matrix(new double[][]{{0.01}, {0.01}, {0.01}}));
+//		filter.predict();
 	}
 
 	@Override
 	public float update(Cursor in) {
-		double val=0.0f;
+		float val=0.0f;
 		
 		val = (float) (findCurvature(in)/(Math.PI));
 		
@@ -42,39 +38,38 @@ public class Curvature extends Quality {
 		
 		//this is the spline method http://www.faculty.idc.ac.il/arik/Java/ex2/index.html
 		int n=15;
-		List<AbstractCursorInputEvt> past = in.getEvents();
-		int sizeofpast = in.getEvents().size();
+		List<Point> past = in.points;
+		int sizeofpast = in.points.size();
 		if (sizeofpast > n) {
-			Point2D[] s = new Point2D[n+1];
+			Point[] s = new Point[n+1];
 			for (int i=0;i<n+1;i++) {
-				AbstractCursorInputEvt p = past.get(sizeofpast-i-1);
-				s[i] = new Point2D.Double(p.getPosX(),p.getPosY());
+				Point p = past.get(sizeofpast-i-1);
+				s[i] = new Point(p.x,p.y);
 			}
-			Point2D p2,p1,p0;
+			Point p2,p1,p0;
 			p0 = s[0];
-			p1 = Geometry.evalBezier(s,0.1);
-			p2 = Geometry.evalBezier(s,0.2);
-			val = findCurvature(p0.getX(), p0.getY(), p1.getX(), p1.getY(), p2.getX(), p2.getY());
-
+			p1 = Geometry.evalBezier(s,0.1f);
+			p2 = Geometry.evalBezier(s,0.2f);
+			val = (float) findCurvature(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
 		}
 		
-		//System.out.println("Curvature: "+val);
+		System.out.println("Curvature: "+val);
 		currentValue = val;
-		return (float)val;
+		return val;
 	}
 		
 	private double findCurvature(Cursor in) {
-		if (in.getEventCount() < 3)
+		if (in.points.size() < 3)
 			return 0.0f;
-		List<AbstractCursorInputEvt> events = in.getEvents();
-		AbstractCursorInputEvt posEvt 	= events.get(events.size()-1);
-		AbstractCursorInputEvt prev 	= events.get(events.size()-2);
-		AbstractCursorInputEvt prev2 	= events.get(events.size()-3);
+		int size = in.points.size();
+		Point posEvt 	= in.points.get(size-1);
+		Point prev 	= in.points.get(size-2);
+		Point prev2 	= in.points.get(size-3);
 		if (prev == null)
 			return 0;
 		if (prev2 == null)
 			return 0;
-		return findCurvature(posEvt.getPosX(), posEvt.getPosY(), prev.getPosX(), prev.getPosY(), prev2.getPosX(), prev2.getPosY());
+		return findCurvature(posEvt.x, posEvt.y, prev.x, prev.y, prev2.x, prev2.y);
 	}
 	public static double findCurvature(double x1, double y1, double x2, double y2, double x3, double y3) {
 
@@ -100,8 +95,8 @@ public class Curvature extends Quality {
 		return result;
 
 	}
-	public static double getAngle(AbstractCursorInputEvt ev1, AbstractCursorInputEvt ev2) {
-		return getAngle(ev1.getPosX(),ev1.getPosY(),ev2.getPosX(), ev2.getPosY());
+	public static double getAngle(Point ev1, Point ev2) {
+		return getAngle(ev1.x,ev1.y,ev2.x, ev2.y);
 	}
 	public static double getAngle(double x1, double y1, double x2, double y2) {
 		return Math.atan2(x1-x2, y1-y2);
