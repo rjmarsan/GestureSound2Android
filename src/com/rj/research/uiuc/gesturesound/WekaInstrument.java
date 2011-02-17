@@ -7,7 +7,7 @@ import com.rj.processing.mt.TouchListener;
 import com.rj.research.uiuc.gesturesound.audio.AudioManager;
 import com.rj.research.uiuc.gesturesound.audio.InstrumentManager;
 import com.rj.research.uiuc.gesturesound.audio.instruments.OSCInstrument;
-import com.rj.research.uiuc.gesturesound.extractors.ExtractorManager;
+import com.rj.research.uiuc.gesturesound.gestures.extractors.ExtractorManager;
 import com.rj.research.uiuc.gesturesound.listeners.InstrumentListener;
 import com.rj.research.uiuc.gesturesound.listeners.WekaClassifyListener;
 import com.rj.research.uiuc.gesturesound.listeners.WekaInstrumentEventManager;
