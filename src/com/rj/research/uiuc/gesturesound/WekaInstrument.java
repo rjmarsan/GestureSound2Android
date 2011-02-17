@@ -5,8 +5,12 @@ import java.io.File;
 import com.rj.processing.mt.Cursor;
 import com.rj.processing.mt.TouchListener;
 import com.rj.research.uiuc.gesturesound.audio.AudioManager;
-import com.rj.research.uiuc.gesturesound.audio.instruments.InstrumentManager;
+import com.rj.research.uiuc.gesturesound.audio.InstrumentManager;
+import com.rj.research.uiuc.gesturesound.audio.instruments.OSCInstrument;
 import com.rj.research.uiuc.gesturesound.extractors.ExtractorManager;
+import com.rj.research.uiuc.gesturesound.listeners.InstrumentListener;
+import com.rj.research.uiuc.gesturesound.listeners.WekaClassifyListener;
+import com.rj.research.uiuc.gesturesound.listeners.WekaInstrumentEventManager;
 
 public class WekaInstrument implements TouchListener  {
 	public final static int NOTHING = 0;
@@ -24,15 +28,21 @@ public class WekaInstrument implements TouchListener  {
 	public InstrumentManager instrument;
 	
 	
+	/**
+	 * I got lazy and want to manage all the events in another object
+	 */
+	public WekaInstrumentEventManager eventmanager;
 	
 	public WekaInstrument() {
 		this.extractormanager = new ExtractorManager();
-		this.instrument = new InstrumentManager();
+		this.instrument = new InstrumentManager(this);
 		this.audiomanager = new AudioManager();
+		this.eventmanager = new WekaInstrumentEventManager();
 	}
 	
 	
-	public void setup() {
+	public void setupTest() {
+		instrument.setInstrument(OSCInstrument.name);
 	}
 	
 	
@@ -93,6 +103,16 @@ public class WekaInstrument implements TouchListener  {
 	}
 	
 	
+	/**
+	 * The interface for events... really I only hope this is used for UI stuff.
+	 */
+	public void addWekaClassifyListener(WekaClassifyListener w) {
+		eventmanager.addWekaClassifyListener(w);
+	}
+	
+	public void addInstrumentListener(InstrumentListener instlist) {
+		eventmanager.addInstrumentListener(instlist);
+	}
 	
 	
 	
@@ -101,9 +121,10 @@ public class WekaInstrument implements TouchListener  {
 	 * 
 	 */
 	public void updateGenerator(Cursor c) {
-		double[] featurevector = extractormanager.makeFeatureVector(c);
+		double[] featurevector = new double[] {c.currentPoint.x/1000, c.currentPoint.y/1000};//extractormanager.makeFeatureVector(c);
 		double[] paramvector = featurevector;//wekamanager.classify(featurevector);
 		instrument.setNewParameters(paramvector);
+		eventmanager.fireWekaClassifyEvent(paramvector);
 	}
 
 

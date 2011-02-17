@@ -2,11 +2,11 @@ package com.rj.research.uiuc.gesturesound;
 
 import processing.core.PApplet;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
-import com.rj.processing.mt.MTCallback;
 import com.rj.processing.mt.MTManager;
 import com.rj.research.uiuc.gesturesound.android.HUDViewController;
 import com.rj.research.uiuc.gesturesound.processing.TouchCanvas;
@@ -17,12 +17,15 @@ public class GestureSound2 extends PApplet {
 	HUDViewController hud;
 	TouchCanvas canvas;
 	MTManager mtManager;
+	
+	Handler mHandler = new Handler();
 
 	public void onCreate(Bundle savedinstance) {
 		super.onCreate(savedinstance);
 		setupWeka();
 		setupMT();
 		setupUI();
+		
 	}
 	
 	public void setupMT() {
@@ -53,6 +56,10 @@ public class GestureSound2 extends PApplet {
     //processing function
     //CALLED NOT ON MAIN UI THREAD
     public void setup() {
+    	mHandler.post(new Runnable() {
+    		public void run() {
+		    	instrument.setupTest();				
+			}});
     }
     
     

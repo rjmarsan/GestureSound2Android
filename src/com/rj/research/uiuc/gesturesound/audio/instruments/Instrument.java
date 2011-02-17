@@ -1,5 +1,7 @@
 package com.rj.research.uiuc.gesturesound.audio.instruments;
 
+import com.rj.research.uiuc.gesturesound.audio.Parameter;
+
 /**
  * The general idea with the instrument is... platform independence.
  * 
@@ -11,8 +13,10 @@ package com.rj.research.uiuc.gesturesound.audio.instruments;
  */
 public abstract class Instrument {
 	Parameter[] parameters;
+	public static String name = "Instrument";
 	
 	public void updateParameters(double[] in) {
+		if (parameters == null) return;
 		for (int i=0; i<Math.min(parameters.length, in.length); i++) {
 			parameters[i].setValue(in[i]);
 		}
