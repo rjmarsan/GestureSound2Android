@@ -30,5 +30,10 @@ public class ExtractorManager {
 	public void touchUp(Cursor c) {
 		featureboxMap.remove(c);
 	}
+
+	public int getFeatureVectorSize() {
+		FeatureBox f = new FeatureBox(null);
+		return f.numFeaturesGenerated();
+	}
 	
 }

@@ -35,6 +35,7 @@ public class GestureSound2 extends PApplet {
 	
 	public void setupWeka() {
     	instrument = new WekaInstrument();
+    	instrument.setSaveFolder(this.getFilesDir());
 	}
     
     public void setupUI() {

@@ -20,8 +20,8 @@ public class FeatureBox {
 		
 		this.extractor = new FeatureExtractor();
 		this.generators = new FeatureGenerator[] {
-			new FeatureGenerator(FeatureMap.CURV),
-			new FeatureGenerator(FeatureMap.SPEED)
+			new HistoryGenerator(FeatureMap.CURV),
+			new HistoryGenerator(FeatureMap.SPEED)
 		};
 		
 		featvec = new double[numFeaturesGenerated()];

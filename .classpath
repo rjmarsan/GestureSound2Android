@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="assets/jahmm-0.6.1.jar"/>
 	<classpathentry kind="lib" path="assets/processing-core.jar"/>
 	<classpathentry kind="lib" path="assets/Jama-1.0.2.jar"/>
+	<classpathentry kind="lib" path="assets/wekaSTRIPPED.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

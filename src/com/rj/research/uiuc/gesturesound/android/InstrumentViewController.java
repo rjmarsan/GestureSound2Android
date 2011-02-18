@@ -50,7 +50,21 @@ public class InstrumentViewController extends LinearLayout implements SettingsCh
 
 	@Override
 	public void settingsChanged(Parameter param, float value) {
+		param.setValue(value + param.getMin());
 		mInstrument.updated();
+	}
+
+
+	public void collapse() {
+		for (SettingsBox s : settingsBoxes) {
+			s.collapse();
+		}
+	}
+	
+	public void expand() {
+		for (SettingsBox s : settingsBoxes) {
+			s.expand();
+		}
 	}
 	
 	

@@ -23,5 +23,11 @@ public class SettingsBox extends RelativeLayout {
 	public void setupFromParameter(Parameter p) {
 		
 	}
-	
+
+
+	public void collapse() {		
+	}
+	public void expand() {
+	}
+
 }

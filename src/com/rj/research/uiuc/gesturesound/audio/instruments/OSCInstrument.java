@@ -17,9 +17,9 @@ public class OSCInstrument extends Instrument {
 	public static String name = "OSCInstrument";
 
 	public OSCInstrument() {
-		Parameter curve = new Parameter("Curvature", Parameter.CONTINUOUS, 0.5);
+		Parameter curve = new Parameter("Setting 1", Parameter.CONTINUOUS, 0.5);
 		curve.setMinMax(-1, 1);
-		Parameter vel = new Parameter("Speed", Parameter.CONTINUOUS, 100);
+		Parameter vel = new Parameter("Setting 2", Parameter.CONTINUOUS, 100);
 		vel.setMinMax(0, 100);
 		parameters = new Parameter[] {
 				curve,vel

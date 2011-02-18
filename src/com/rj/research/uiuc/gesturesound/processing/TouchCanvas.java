@@ -1,5 +1,7 @@
 package com.rj.research.uiuc.gesturesound.processing;
 
+import java.util.ArrayList;
+
 import processing.core.PApplet;
 
 import com.rj.processing.mt.Cursor;
@@ -18,7 +20,7 @@ public class TouchCanvas implements TouchListener {
 		p.stroke(0,200,0);
 		p.fill(0,100,0);
 		p.rectMode(PApplet.CENTER);
-		for (Cursor c : m.cursors) {
+		for (Cursor c : (ArrayList<Cursor>)m.cursors.clone()) {
 			if (c != null && c.currentPoint != null)
 				p.rect(c.currentPoint.x, c.currentPoint.y, 50, 50);
 		}

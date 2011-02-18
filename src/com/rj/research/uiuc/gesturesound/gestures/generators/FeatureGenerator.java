@@ -17,9 +17,9 @@ public class FeatureGenerator {
 	
 	double[] d = new double[1];
 	public double[] update(FeatureMap map) {
-		System.out.println(map.toString());
+//		System.out.println(map.toString());
 		d[0] = map.get(type);
-		System.out.println("Looking for "+type+" and got value: "+d[0]);
+//		System.out.println("Looking for "+type+" and got value: "+d[0]);
 		return d;
 	}
 }

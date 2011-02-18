@@ -8,6 +8,8 @@
 		android:id="@+id/hid"
 		android:layout_width="300dip"
 		android:layout_height="fill_parent"
+		android:padding="10dip"
+		android:paddingTop="20dip"
 		android:background="@color/hid_background">
 		
 		<LinearLayout
@@ -73,7 +75,23 @@
 			android:layout_alignParentRight="true"
 			android:text="Hide"
 			/>
-		
+
+		<Button
+			android:id="@+id/save_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_alignParentLeft="true"
+			android:text="Save"
+			/>
+		<Button
+			android:id="@+id/load_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_toRightOf="@+id/save_button"
+			android:text="load"
+			/>
 		
 		
 	</com.rj.research.uiuc.gesturesound.android.HUDViewController>

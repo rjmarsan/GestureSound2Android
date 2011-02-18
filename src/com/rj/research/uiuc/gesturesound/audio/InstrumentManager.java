@@ -56,4 +56,20 @@ public class InstrumentManager {
 		}
 		return true;
 	}
+
+
+	public double[] getInstrumentParametersAsDouble() {
+		Parameter[] params = getInstrumentParameters();
+		double[] out = new double[params.length];
+		for (int i=0;i<out.length;i++) {
+			out[i] = params[i].getValue();
+			System.out.println("Param: "+params[i].getName()+" val:"+out[i]);
+		}
+		return out;
+	}
+
+
+	public String getName() {
+		return currentInstrument.name;
+	}
 }

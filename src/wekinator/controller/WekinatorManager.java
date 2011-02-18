@@ -8,7 +8,7 @@ import wekinator.LearningAlgorithms.LearningAlgorithm;
 import wekinator.LearningAlgorithms.NNLearningAlgorithm;
 
 public class WekinatorManager {
-	public final static String SETTINGS_DIR = "./settings/";
+	public File SETTINGS_DIR;
 	public String name;
 	private LearningSystem learnsys;
 	private LearningAlgorithm[] learnarray;
@@ -16,8 +16,8 @@ public class WekinatorManager {
 
 	public WekinatorManager(int numInParams, int numOutParams) {
 		learnsys = makeLearningSystem(numOutParams);
-		learnarray = new LearningAlgorithm[numInParams];
-		for (int i=0;i<numInParams;i++) {
+		learnarray = new LearningAlgorithm[numOutParams];
+		for (int i=0;i<numOutParams;i++) {
 			learnarray[i] = new NNLearningAlgorithm();
 		}
 		data = makeDataset(numInParams, numOutParams);
@@ -25,16 +25,38 @@ public class WekinatorManager {
 		learnsys.setLearners(learnarray);
 	}
 	
-	public WekinatorManager(String name, int numInParams, int numOutParams) {
+	public WekinatorManager(String name, int numInParams, int numOutParams, File folder) {
 		try {
-			learnsys = LearningSystem.readFromFile(new File(SETTINGS_DIR+name+"_learnsys.yay"));
+			SETTINGS_DIR = folder;
+			learnsys = LearningSystem.readFromFile(new File(folder, name+"_learnsys.yay"));
 			learnarray = new LearningAlgorithm[numInParams];
 			for (int i=0;i<numInParams;i++) {
-				learnarray[i] = LearningAlgorithm.readFromFile(new File(SETTINGS_DIR+name+"_learnalg_"+i+".yay"));
+				learnarray[i] = LearningAlgorithm.readFromFile(new File(folder, name+"_learnalg_"+i+".yay"));
 			}
-			data = SimpleDataset.readFromFile(new File(SETTINGS_DIR+name+"_dataset.yay"));
+			data = SimpleDataset.readFromFile(new File(folder, name+"_dataset.yay"));
 			learnsys.setDataset(data);
 			learnsys.setLearners(learnarray);
+		}catch(Exception e) { e.printStackTrace(); }
+	}
+	
+	public void save() {
+		try {
+			learnsys.writeToFile(new File(SETTINGS_DIR, name+"_learnsys.yay"));
+			for (int i=0;i<learnarray.length;i++) {
+				learnarray[i].writeToFile(new File(SETTINGS_DIR, name+"_learnalg_"+i+".yay"));
+			}
+			data.writeToFile(new File(SETTINGS_DIR, name+"_dataset.yay"));
+		}catch(Exception e) { e.printStackTrace(); }
+	}
+	
+	public void save(File folder) {
+		try {
+			SETTINGS_DIR = folder;
+			learnsys.writeToFile(new File(SETTINGS_DIR, name+"_learnsys.yay"));
+			for (int i=0;i<learnarray.length;i++) {
+				learnarray[i].writeToFile(new File(SETTINGS_DIR, name+"_learnalg_"+i+".yay"));
+			}
+			data.writeToFile(new File(SETTINGS_DIR, name+"_dataset.yay"));
 		}catch(Exception e) { e.printStackTrace(); }
 	}
 	
@@ -62,6 +84,7 @@ public class WekinatorManager {
 	
 	public void addToTrain(double[] in, double[] out) {
 		learnsys.addToTraining(in, out);
+		System.out.println("Size of training set:"+learnsys.getDataset().getNumDatapoints());
 	}
 	
 	public void train() {

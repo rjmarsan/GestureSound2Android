@@ -2,6 +2,8 @@ package com.rj.research.uiuc.gesturesound;
 
 import java.io.File;
 
+import wekinator.controller.WekinatorManager;
+
 import android.util.Log;
 
 import com.rj.processing.mt.Cursor;
@@ -24,11 +26,13 @@ public class WekaInstrument implements TouchListener  {
 	
 	/** The core components of a WekaInstrument **/
 	/** all of these are UI independent (hopefully) **/
-//	public WekinatorManager wekamanager;
+	public WekinatorManager wekamanager;
 	public AudioManager audiomanager;
 	public ExtractorManager extractormanager;
 	public InstrumentManager instrument;
 	
+	
+	public File saveFolder;
 	
 	/**
 	 * I got lazy and want to manage all the events in another object
@@ -42,18 +46,38 @@ public class WekaInstrument implements TouchListener  {
 		this.eventmanager = new WekaInstrumentEventManager();
 	}
 	
+	public void makeWekaManager() {
+		int in = extractormanager.getFeatureVectorSize();
+		int out = instrument.getInstrumentParameters().length;
+		this.wekamanager = new WekinatorManager(in,out);
+	}
+	public void makeWekaManager(File f) {
+		int in = extractormanager.getFeatureVectorSize();
+		int out = instrument.getInstrumentParameters().length;
+		this.wekamanager = new WekinatorManager(instrument.getName(), in,out,f);
+	}
+	
 	
 	public void setupTest() {
 		instrument.setInstrument(OSCInstrument.name);
+		makeWekaManager();
 	}
 	
 	
-	public void loadFromFile(File f) {
-		
+	public void setSaveFolder(File f) {
+		this.saveFolder = f;
+	}
+	public void loadFromFolder(File f) {
+		instrument.setInstrument(OSCInstrument.name);
+		makeWekaManager(f);
 	}
 	
-	public void saveToFile(File f) {
-		
+	public void saveToFolder(File f) {
+		wekamanager.save(f);
+	}
+	
+	public void save() {
+		this.saveToFolder(saveFolder);
 	}
 	
 	
@@ -63,14 +87,32 @@ public class WekaInstrument implements TouchListener  {
 	 * mainly because this is what the program's all about.
 	 */
 	public void perform() {
-		this.mode = PERFORMING;
+		System.out.println("Weka: performing?");
+		if (this.mode == TRAINING || this.mode == PERFORMING) 
+			return; //no point.
+		else if (this.mode == RECORDING)
+			train();
+		else
+			this.mode = PERFORMING;
 	}
 	public void record() {
 		this.mode = RECORDING;
 	}
 	public void train() {
-		this.mode = TRAINING;
-		//we actually need to train things at this point.
+		this.mode = NOTHING;
+		System.out.println("Training!");
+		Runnable task = new Runnable() {
+			public void run() {
+				System.out.println("----Begin offthread training");
+				mode = TRAINING;
+				eventmanager.fireWekaTrainBegin(wekamanager);
+				wekamanager.train();
+				eventmanager.fireWekaTrainEnd(wekamanager);
+				mode = PERFORMING;
+				System.out.println("----end offthread training");
+			}
+		};
+		new Thread(task).start();
 	}
 	public void doNothing() {
 		this.mode = NOTHING;
@@ -128,9 +170,21 @@ public class WekaInstrument implements TouchListener  {
 		double[] featurevector = extractormanager.makeFeatureVector(c);
 		if (featurevector == null) return; //something went wrong. return now!
 		
-		double[] paramvector = featurevector;//wekamanager.classify(featurevector);
-		instrument.setNewParameters(paramvector);
-		eventmanager.fireWekaClassifyEvent(paramvector);
+		if (mode == PERFORMING) {
+			System.out.println("Performing!");
+			double[] paramvector = wekamanager.classify(featurevector);
+			for (double d : paramvector) System.out.println("D:"+d);
+			instrument.setNewParameters(paramvector);
+			eventmanager.fireWekaClassifyEvent(paramvector);
+		}
+		else if (mode == RECORDING) {
+			System.out.println("recording!");
+			wekamanager.addToTrain(featurevector, instrument.getInstrumentParametersAsDouble());
+			//TODO make this event
+			//eventmanager.fireWekaTrainEvent(paramvector);
+		}
+
+
 	}
 
 

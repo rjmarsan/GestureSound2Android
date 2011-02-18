@@ -13,6 +13,8 @@ import com.rj.research.uiuc.gesturesound.audio.Parameter;
 public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeListener {
 	private final static int SLIDER_MAX = 100;
 	SeekBar seekbar;
+	TextView paramvalue;
+	TextView title;
 	SettingsChangedListener callback;
 	float max;
 	
@@ -32,14 +34,17 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 		param = p;
 		seekbar = (SeekBar) this.findViewById(R.id.slide_bar);
 		seekbar.setOnSeekBarChangeListener(this);
-		TextView title = (TextView) this.findViewById(R.id.slider_name);
+		title = (TextView) this.findViewById(R.id.slider_name);
 		title.setText(p.getName());
+		paramvalue = (TextView) this.findViewById(R.id.slider_value);
+		paramvalue.setText(p.getValue()+"");
 	}
 	
 	public void setValue(float value) {
 		if (seekbar == null)
 			return; //ok now something's wrong.
 		seekbar.setProgress((int)((value/max)*SLIDER_MAX));
+		paramvalue.setText(value+"");
 	}
 	
 	public void setMax(float max) {
@@ -69,7 +74,16 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 		
 	}
 	
+	public void collapse() {
+		seekbar.setVisibility(GONE);
+		title.setVisibility(GONE);
+	}
 	
+	public void expand() {
+		seekbar.setVisibility(VISIBLE);
+		title.setVisibility(VISIBLE);
+	}
+
 	
 	
 	

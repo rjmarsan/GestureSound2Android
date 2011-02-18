@@ -53,7 +53,7 @@ public class Curvature extends Quality {
 			val = (float) findCurvature(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
 		}
 		
-		System.out.println("Curvature: "+val);
+//		System.out.println("Curvature: "+val);
 		currentValue = val;
 		return val;
 	}
