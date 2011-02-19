@@ -1,12 +1,18 @@
 package com.rj.research.uiuc.gesturesound.android;
 
 import wekinator.controller.WekinatorManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -16,9 +22,10 @@ import com.rj.research.uiuc.gesturesound.audio.Parameter;
 import com.rj.research.uiuc.gesturesound.audio.instruments.Instrument;
 import com.rj.research.uiuc.gesturesound.listeners.InstrumentListener;
 import com.rj.research.uiuc.gesturesound.listeners.WekaClassifyListener;
+import com.rj.research.uiuc.gesturesound.listeners.WekaInstListener;
 
 
-public class HUDViewController extends RelativeLayout implements WekaClassifyListener {
+public class HUDViewController extends RelativeLayout implements WekaClassifyListener, WekaInstListener {
 	WekaInstrument weka;
 	InstrumentViewController instView;
 	Handler mHandle;
@@ -29,19 +36,31 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 	
 	Button loadbutton;
 	Button savebutton;
+	Button newbutton;
 	Button playbutton;
 	Button recordbutton;
 	
 	TextView trainingview;
-
+	TextView trainingsamples;
+	TextView name;
+	
 	public HUDViewController(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		instView = (InstrumentViewController) this.findViewById(R.id.instrument_settings);
+		this.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				return true; //doesnt forward to the bottom part
+			}});
 	}
 	
 	public InstrumentListener instrumentListener = new InstrumentListener() {
 		public void newInstrument(Instrument instrument) {
-			instView.setInstrument(instrument);
+			final Instrument inst2 = instrument;
+			mHandle.post(new Runnable() { public void run() {
+			instView.setInstrument(inst2);
+			}});
 		}
 		public void updatedParameters(Parameter[] parameters, Instrument instrument, boolean fromUI) {
 			TextView debugText = (TextView) HUDViewController.this.findViewById(R.id.debug_box);
@@ -60,6 +79,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 		weka = instrument;
 		weka.addInstrumentListener(instrumentListener);
 		weka.addWekaClassifyListener(this);
+		weka.addWekaInstListener(this);
 		
 		playbutton = (Button) this.findViewById(R.id.play_button);
 		playbutton.setOnClickListener(new OnClickListener() {
@@ -81,17 +101,66 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 		trainingview.setText("Idle");
 		
 		
+		trainingsamples = (TextView) this.findViewById(R.id.training_samples);
+
+		
+		name = (TextView) this.findViewById(R.id.weka_name);
+
+		
+		newbutton = (Button) this.findViewById(R.id.new_button);
+		newbutton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+				builder.setTitle("Name?");
+				builder.setMessage("Pick a name for the instrument");
+				final EditText text = new EditText(getContext());
+				builder.setView(text);
+				builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {  
+					public void onClick(DialogInterface dialog, int whichButton) {  
+					  String value = text.getText().toString();  
+					  	weka.newInst(value);
+					}  
+					}); 
+				AlertDialog alert = builder.create();
+				alert.show();
+			}	
+		});
+
+		
 		savebutton = (Button) this.findViewById(R.id.save_button);
 		savebutton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				weka.save();
+//				SharedPreferences prefs = getContext().getSharedPreferences("saveditems", 0);
+//				Editor edit = prefs.edit();
+//				edit.putString(weka.name, "yay!");
+//				edit.commit();
 			}	
 		});
 		
 		loadbutton = (Button) this.findViewById(R.id.load_button);
 		loadbutton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				//TODO make it load something
+//				SharedPreferences prefs = getContext().getSharedPreferences("saveditems", 0);
+//				Object[] array = prefs.getAll().keySet().toArray();
+//				
+//				final CharSequence[] items = new CharSequence [array.length+1];
+//				for (int i=0; i<array.length; i++) {
+//					items[i] = (CharSequence) array[i];
+//				}
+//				items[array.length] = "RJTest1"; //testing purposes
+
+				final String[] items = weka.getSavedInstances();
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+				builder.setTitle("Pick a saved instance");
+				builder.setItems(items, new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog, int item) {
+				        weka.load((String) items[item]);
+				    }
+				});
+				AlertDialog alert = builder.create();
+				alert.show();
 			}	
 		});
 
@@ -112,6 +181,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 		if (hidden) {
 			togglehide.setText("show");
 			this.setLayoutParams(new LayoutParams(50, LayoutParams.FILL_PARENT));
+			newbutton.setVisibility(View.GONE);
 			savebutton.setVisibility(View.GONE);
 			loadbutton.setVisibility(View.GONE);
 			recordbutton.setVisibility(View.GONE);
@@ -121,12 +191,33 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 		} else {
 			togglehide.setText("hide");
 			this.setLayoutParams(new LayoutParams(300, LayoutParams.FILL_PARENT));
+			newbutton.setVisibility(View.VISIBLE);
 			savebutton.setVisibility(View.VISIBLE);
 			loadbutton.setVisibility(View.VISIBLE);
 			recordbutton.setVisibility(View.VISIBLE);
 			trainingview.setVisibility(View.VISIBLE);
 			instView.expand();
 		}
+	}
+	
+	public void setStatusText(final WekaInstrument weka) {
+		
+		mHandle.post(new Runnable() { public void run() {
+			String text = "";
+			if (weka.mode == WekaInstrument.NOTHING) {
+				text = "idle ";
+			}
+			else if (weka.mode == WekaInstrument.PERFORMING) {
+				text = "playing ";
+			}
+			else if (weka.mode == WekaInstrument.RECORDING) {
+				text = "recording: ";
+			}
+			else if (weka.mode == WekaInstrument.TRAINING) {
+				text = "training... ";
+			}
+			if (trainingview != null) trainingview.setText(text);
+			}});
 	}
 
 	@Override
@@ -144,7 +235,42 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 	}
 
 	@Override
+	public void updatedTraining(final WekinatorManager weka) {
+		mHandle.post(new Runnable() { public void run() {
+			if (trainingsamples != null) trainingsamples.setText(weka.getSamples()+"samples");
+			}});			
+	}
+	@Override
 	public void updatedOutput(double[] output) {
 	}
+
+	@Override
+	public void finishedLoadingSetup(final WekaInstrument inst) {
+		mHandle.post(new Runnable() { public void run() {
+			if (name != null) name.setText(inst.name);
+			if (trainingsamples != null) trainingsamples.setText(inst.wekamanager.getSamples()+"samples");
+			}});
+	}
+
+	@Override
+	public void finishedSavingSetup(final WekaInstrument inst) {
+		mHandle.post(new Runnable() { public void run() {
+			if (name != null) name.setText(inst.name);
+			}});
+	}
+
+	@Override
+	public void startLoadingSetup() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startSavingSetup() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 
 }

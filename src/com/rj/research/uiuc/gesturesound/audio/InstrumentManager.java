@@ -1,5 +1,11 @@
 package com.rj.research.uiuc.gesturesound.audio;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 
 import com.rj.research.uiuc.gesturesound.WekaInstrument;
@@ -18,6 +24,43 @@ public class InstrumentManager {
 		this.parent = parent;
 		possibleInstruments = new HashMap<String, Class<?>>();
 		possibleInstruments.put(OSCInstrument.name, OSCInstrument.class);
+	}
+	
+	public void saveCurrentInstToFolder(File folder) {
+		try {
+			File savefile = new File(folder, "instrument.inst");
+			if (!folder.exists()) savefile.mkdirs();
+			BufferedWriter out = new BufferedWriter(new FileWriter(savefile));
+			out.write(currentInstrument.name);
+			out.close();
+		}catch(Exception e) { e.printStackTrace(); }
+	}
+	
+	public void loadCurrentInstFromFolder(File folder) {
+		try {
+			File savefile = new File(folder, "instrument.inst");
+			String text = InstrumentManager.readTextFile(savefile);
+			setInstrument(text);
+		}catch(Exception e) { e.printStackTrace(); }
+	}
+	
+	public static String readTextFile(File name) throws IOException {
+		StringBuffer sb = new StringBuffer(1024);
+		BufferedReader reader = new BufferedReader(new FileReader(name));
+				
+		char[] chars = new char[1024];
+		int numRead = 0;
+		while( (numRead = reader.read(chars)) > -1){
+			sb.append(String.valueOf(chars));	
+		}
+
+		reader.close();
+
+		return sb.toString();
+	}
+	
+	public Instrument getInstrument() {
+		return currentInstrument;
 	}
 	
 	

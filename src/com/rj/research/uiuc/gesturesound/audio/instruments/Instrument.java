@@ -13,7 +13,7 @@ import com.rj.research.uiuc.gesturesound.audio.Parameter;
  */
 public abstract class Instrument {
 	Parameter[] parameters;
-	public static String name = "Instrument";
+	public static String name = "AbstractInstrument";
 	
 	public void updateParameters(double[] in) {
 		if (parameters == null) return;

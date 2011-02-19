@@ -1,10 +1,9 @@
 package com.rj.research.uiuc.gesturesound;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import wekinator.controller.WekinatorManager;
-
-import android.util.Log;
 
 import com.rj.processing.mt.Cursor;
 import com.rj.processing.mt.TouchListener;
@@ -14,6 +13,7 @@ import com.rj.research.uiuc.gesturesound.audio.instruments.OSCInstrument;
 import com.rj.research.uiuc.gesturesound.gestures.extractors.ExtractorManager;
 import com.rj.research.uiuc.gesturesound.listeners.InstrumentListener;
 import com.rj.research.uiuc.gesturesound.listeners.WekaClassifyListener;
+import com.rj.research.uiuc.gesturesound.listeners.WekaInstListener;
 import com.rj.research.uiuc.gesturesound.listeners.WekaInstrumentEventManager;
 
 public class WekaInstrument implements TouchListener  {
@@ -23,6 +23,8 @@ public class WekaInstrument implements TouchListener  {
 	public final static int TRAINING = 3;
 	
 	public int mode = NOTHING;
+	
+	public String name = "RJTest 11";
 	
 	/** The core components of a WekaInstrument **/
 	/** all of these are UI independent (hopefully) **/
@@ -50,13 +52,24 @@ public class WekaInstrument implements TouchListener  {
 		int in = extractormanager.getFeatureVectorSize();
 		int out = instrument.getInstrumentParameters().length;
 		this.wekamanager = new WekinatorManager(in,out);
+		if (this.saveFolder != null) this.wekamanager.setSaveDir(saveFolder);
+		this.eventmanager.fireLoadCompleteEvent(this);
 	}
-	public void makeWekaManager(File f) {
+	public void makeWekaManager(String name) {
+		instrument.loadCurrentInstFromFolder(new File(saveFolder, name));
 		int in = extractormanager.getFeatureVectorSize();
 		int out = instrument.getInstrumentParameters().length;
-		this.wekamanager = new WekinatorManager(instrument.getName(), in,out,f);
+		this.wekamanager = new WekinatorManager(name,in,out,saveFolder);
+		if (this.saveFolder != null) this.wekamanager.setSaveDir(saveFolder);
+		this.eventmanager.fireLoadCompleteEvent(this);
 	}
 	
+	
+	public void newInst(String name) {
+		this.name = name;
+		instrument.setInstrument(OSCInstrument.name);
+		makeWekaManager();
+	}
 	
 	public void setupTest() {
 		instrument.setInstrument(OSCInstrument.name);
@@ -66,25 +79,63 @@ public class WekaInstrument implements TouchListener  {
 	
 	public void setSaveFolder(File f) {
 		this.saveFolder = f;
+		if (this.wekamanager != null) this.wekamanager.setSaveDir(f);
 	}
-	public void loadFromFolder(File f) {
-		instrument.setInstrument(OSCInstrument.name);
-		makeWekaManager(f);
-	}
-	
-	public void saveToFolder(File f) {
-		wekamanager.save(f);
+	public void load(final String name) {
+		Runnable save = new Runnable() {public void run() {
+			System.out.println("---------------Starting to load!");
+			instrument.setInstrument(OSCInstrument.name);
+			try {
+				eventmanager.fireLoadStartedEvent();
+				makeWekaManager(name);
+				WekaInstrument.this.name = name;
+				eventmanager.fireLoadCompleteEvent(WekaInstrument.this);
+			} catch (Exception e) 
+				{e.printStackTrace();}
+			finally{
+				System.out.println("+++++++++++++++Loaded!!!");
+			}}};
+		new Thread(new ThreadGroup("loadgroup"), save, "loadthread", 1024*1024).start();
 	}
 	
 	public void save() {
-		this.saveToFolder(saveFolder);
+		saveas(name);
+	}
+
+	public void saveas(final String name) {
+		Runnable save = new Runnable() {public void run() {
+			System.out.println("---------------Starting to save as!");
+			try {
+				eventmanager.fireSaveStartedEvent();
+				File savefile = wekamanager.save(name);
+				instrument.saveCurrentInstToFolder(savefile);
+				WekaInstrument.this.name = name;
+				eventmanager.fireSaveCompleteEvent(WekaInstrument.this);
+			} catch (Exception e) { e.printStackTrace(); }
+			finally {
+			System.out.println("+++++++++++++++Saved as!!!");
+			}}};
+		new Thread(new ThreadGroup("savegroup"), save, "savethread", 1024*1024).start();
 	}
 	
 	
+	public String[] getSavedInstances() {
+		File[] files = saveFolder.listFiles();
+		ArrayList<String> stringfiles = new ArrayList<String>();
+		for (File f : files) {
+			if (f.isDirectory()) {
+				stringfiles.add(f.getName());
+			}
+		}
+		String[] outarray = new String[stringfiles.size()];
+		for (int i = 0; i<outarray.length;i++) {
+			outarray[i] = stringfiles.get(i);
+		}
+		return outarray;
+	}
+	
 	/**
 	 * Set the global state of the WekaInstrument.   
-	 * This is about the only time I found it necessary to forward a child object's functions through us.
-	 * mainly because this is what the program's all about.
 	 */
 	public void perform() {
 		System.out.println("Weka: performing?");
@@ -103,7 +154,7 @@ public class WekaInstrument implements TouchListener  {
 		System.out.println("Training!");
 		Runnable task = new Runnable() {
 			public void run() {
-				System.out.println("----Begin offthread training");
+				System.out.println("----Begin offthread training (with larger stack)");
 				mode = TRAINING;
 				eventmanager.fireWekaTrainBegin(wekamanager);
 				wekamanager.train();
@@ -112,7 +163,7 @@ public class WekaInstrument implements TouchListener  {
 				System.out.println("----end offthread training");
 			}
 		};
-		new Thread(task).start();
+		new Thread(new ThreadGroup("traingroup"), task, "trainingthread", 1024*1024).start();
 	}
 	public void doNothing() {
 		this.mode = NOTHING;
@@ -159,6 +210,9 @@ public class WekaInstrument implements TouchListener  {
 	public void addInstrumentListener(InstrumentListener instlist) {
 		eventmanager.addInstrumentListener(instlist);
 	}
+	public void addWekaInstListener(WekaInstListener inst) {
+		eventmanager.addWekaInstListener(inst);
+	}
 	
 	
 	
@@ -181,7 +235,7 @@ public class WekaInstrument implements TouchListener  {
 			System.out.println("recording!");
 			wekamanager.addToTrain(featurevector, instrument.getInstrumentParametersAsDouble());
 			//TODO make this event
-			//eventmanager.fireWekaTrainEvent(paramvector);
+			eventmanager.fireWekaTrainEvent(wekamanager);
 		}
 
 

@@ -24,6 +24,8 @@ public class InstrumentViewController extends LinearLayout implements SettingsCh
 
 	
 	public void setInstrument(Instrument instrument) {
+		this.removeAllViews();
+		
 		this.mInstrument = instrument;
 		Parameter[] params = instrument.getParameters();
 		settingsBoxes = new SettingsBox[params.length];

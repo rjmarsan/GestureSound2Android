@@ -12,12 +12,24 @@
 		android:paddingTop="20dip"
 		android:background="@color/hid_background">
 		
+		
+		<TextView
+			android:id="@+id/weka_name"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_alignParentLeft="true"
+			android:textSize="16dip"
+			android:text="Weka Instrument Name"
+			android:singleLine="true"
+		/>
+		
 		<LinearLayout
 			android:id="@+id/weka_controls"
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:orientation="horizontal"
-			android:layout_alignParentTop="true"
+			android:layout_below="@+id/weka_name"
 			android:layout_alignParentLeft="true"
 			android:background="#22193099"
 		>
@@ -39,6 +51,12 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="Training..."
+				/>
+		 	<TextView
+				android:id="@+id/training_samples"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="0"
 				/>
 
 		</LinearLayout>
@@ -77,11 +95,19 @@
 			/>
 
 		<Button
-			android:id="@+id/save_button"
+			android:id="@+id/new_button"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
 			android:layout_alignParentLeft="true"
+			android:text="New"
+			/>
+		<Button
+			android:id="@+id/save_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_toRightOf="@+id/new_button"
 			android:text="Save"
 			/>
 		<Button
