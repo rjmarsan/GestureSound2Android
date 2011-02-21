@@ -65,17 +65,18 @@ public class WekaInstrument implements TouchListener  {
 	}
 	
 	
+	public void start() {
+		String name = this.getSavedInstances()[0];
+		load(name);
+	}
+	
 	public void newInst(String name) {
+		eventmanager.fireLoadStartedEvent();
 		this.name = name;
 		instrument.setInstrument(OSCInstrument.name);
 		makeWekaManager();
 	}
-	
-	public void setupTest() {
-		instrument.setInstrument(OSCInstrument.name);
-		makeWekaManager();
-	}
-	
+
 	
 	public void setSaveFolder(File f) {
 		this.saveFolder = f;
@@ -86,10 +87,14 @@ public class WekaInstrument implements TouchListener  {
 			System.out.println("---------------Starting to load!");
 			instrument.setInstrument(OSCInstrument.name);
 			try {
+				
+				
 				eventmanager.fireLoadStartedEvent();
 				makeWekaManager(name);
 				WekaInstrument.this.name = name;
 				eventmanager.fireLoadCompleteEvent(WekaInstrument.this);
+				
+				
 			} catch (Exception e) 
 				{e.printStackTrace();}
 			finally{

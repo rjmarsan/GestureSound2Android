@@ -17,6 +17,7 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 	TextView title;
 	SettingsChangedListener callback;
 	float max;
+	float min;
 	
 	Parameter param;
 	
@@ -43,7 +44,8 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 	public void setValue(float value) {
 		if (seekbar == null)
 			return; //ok now something's wrong.
-		seekbar.setProgress((int)((value/max)*SLIDER_MAX));
+//		seekbar.setProgress((int)((value/max)*SLIDER_MAX));
+		seekbar.setProgress((int) (((value-min)/(max-min)) * SLIDER_MAX)) ;
 		paramvalue.setText(value+"");
 	}
 	
@@ -54,13 +56,19 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 		this.max = max;
 	}
 	
+	public void setMin(float min) {
+		if (seekbar == null)
+			return; //ok now something's wrong.
+		seekbar.setMax(SLIDER_MAX);
+		this.min = min;
+	}
+	
 	
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
 		if (callback != null) {
-			
 			if (fromUser)
-				callback.settingsChanged(param, ((float)progress/(float)SLIDER_MAX)*max);
+				callback.settingsChanged(param, ((float)progress/(float)SLIDER_MAX)*(max-min));
 			updatedSeek(seekBar, progress, fromUser);
 		}
 	}
@@ -71,7 +79,7 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 
 	}
 	public void updatedSeek(SeekBar seekBar, int progress,	boolean fromUser) {
-		
+		paramvalue.setText(((float)progress/(float)SLIDER_MAX)*(max-min)+"");
 	}
 	
 	public void collapse() {

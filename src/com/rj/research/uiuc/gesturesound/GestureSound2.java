@@ -69,8 +69,9 @@ public class GestureSound2 extends PApplet {
 //    	test3();
     	mHandler.post(new Runnable() {
     		public void run() {
-		    	instrument.setupTest();		
+//		    	instrument.setupTest();		
 //		    	instrument.load(OSCInstrument.name);
+    			instrument.start();
 			}});
     }
     
@@ -94,7 +95,7 @@ public class GestureSound2 extends PApplet {
     
     
     
-    
+    /*
     
     
 	public void printDoubleArray(double[] out) {
@@ -217,7 +218,7 @@ public class GestureSound2 extends PApplet {
     
     
     
-    
+    */
     
     
     

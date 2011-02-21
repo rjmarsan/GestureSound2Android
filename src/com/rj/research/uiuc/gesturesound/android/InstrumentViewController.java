@@ -36,7 +36,8 @@ public class InstrumentViewController extends LinearLayout implements SettingsCh
 			SettingsSliderBox s  = (SettingsSliderBox) inflater.inflate(R.layout.slider, null);
 			settingsBoxes[i] = s;
 			s.setupFromParameter(params[i]);
-			s.setMax(params[i].getRange());
+			s.setMax(params[i].getMax());
+			s.setMin(params[i].getMin());
 			s.setSettingsChangedListener(this);
 			this.addView(s,i);
 		}
@@ -45,14 +46,14 @@ public class InstrumentViewController extends LinearLayout implements SettingsCh
 	public void updateParams(Instrument instrument, Parameter[] params) {
 		if (settingsBoxes == null) return;
 		for (int i=0; i<settingsBoxes.length; i++) {
-			settingsBoxes[i].setValue(params[i].getValue() - params[i].getMin());
+			settingsBoxes[i].setValue(params[i].getValue());
 		}
 	}
 
 
 	@Override
 	public void settingsChanged(Parameter param, float value) {
-		param.setValue(value + param.getMin());
+		param.setValue(value);
 		mInstrument.updated();
 	}
 
