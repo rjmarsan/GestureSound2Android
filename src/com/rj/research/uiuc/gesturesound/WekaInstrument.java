@@ -1,7 +1,11 @@
 package com.rj.research.uiuc.gesturesound;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import wekinator.controller.WekinatorManager;
 
@@ -34,6 +38,7 @@ public class WekaInstrument implements TouchListener  {
 	public InstrumentManager instrument;
 	
 	
+	public File searchFolder;
 	public File saveFolder;
 	
 	/**
@@ -41,94 +46,137 @@ public class WekaInstrument implements TouchListener  {
 	 */
 	public WekaInstrumentEventManager eventmanager;
 	
-	public WekaInstrument() {
+	public WekaInstrument(File searchFolder) {
 		this.extractormanager = new ExtractorManager();
 		this.instrument = new InstrumentManager(this);
 		this.audiomanager = new AudioManager();
 		this.eventmanager = new WekaInstrumentEventManager();
+		this.searchFolder = searchFolder;
 	}
+
 	
-	public void makeWekaManager() {
-		int in = extractormanager.getFeatureVectorSize();
-		int out = instrument.getInstrumentParameters().length;
-		this.wekamanager = new WekinatorManager(in,out);
+	public void makeWekaInstrument(File saveFolder) throws Exception {
+		this.saveFolder = saveFolder;
+		loadWekaInfoFromFolder(saveFolder);
+		instrument.loadCurrentInstFromFolder(saveFolder);
+//		int in = extractormanager.getFeatureVectorSize();
+//		int out = instrument.getInstrumentParameters().length;
+//		this.wekamanager = new WekinatorManager(name,in,out,saveFolder);
+		this.wekamanager = new WekinatorManager(saveFolder);
 		if (this.saveFolder != null) this.wekamanager.setSaveDir(saveFolder);
-		this.eventmanager.fireLoadCompleteEvent(this);
-	}
-	public void makeWekaManager(String name) {
-		instrument.loadCurrentInstFromFolder(new File(saveFolder, name));
-		int in = extractormanager.getFeatureVectorSize();
-		int out = instrument.getInstrumentParameters().length;
-		this.wekamanager = new WekinatorManager(name,in,out,saveFolder);
-		if (this.saveFolder != null) this.wekamanager.setSaveDir(saveFolder);
-		this.eventmanager.fireLoadCompleteEvent(this);
+//		this.eventmanager.fireLoadCompleteEvent(this);
 	}
 	
 	
 	public void start() {
-		String name = this.getSavedInstances()[0];
-		load(name);
+		String[] instances = this.getSavedInstances();
+		if (instances != null && instances.length > 0) {
+			load(instances[0]);
+		} else {
+			makeNewWekaInstrument("Test instrument 1");
+		}
 	}
 	
-	public void newInst(String name) {
+	public void makeNewWekaInstrument(String name) {
 		eventmanager.fireLoadStartedEvent();
 		this.name = name;
+		this.saveFolder = new File(searchFolder, name);
 		instrument.setInstrument(OSCInstrument.name);
-		makeWekaManager();
+		int in = extractormanager.getFeatureVectorSize();
+		int out = instrument.getInstrumentParameters().length;
+		this.wekamanager = new WekinatorManager(in,out);
+		this.eventmanager.fireLoadCompleteEvent(this);
+		eventmanager.fireLoadCompleteEvent(this);
 	}
 
+	public void load(String name) {
+		load(new File(searchFolder, name));
+	}
+
+	public void load(final File saveFolder) {
+		Runnable save = new Runnable() {public void run() {
+			System.out.println("---------------Starting to load!");
+				try {
+					eventmanager.fireLoadStartedEvent();
+					makeWekaInstrument(saveFolder);
+					eventmanager.fireLoadCompleteEvent(WekaInstrument.this);
+				} catch (Exception e) {
+					eventmanager.fireLoadFailedEvent();
+					e.printStackTrace();
+				}
+				 }};
+		new Thread(new ThreadGroup("loadgroup"), save, "loadthread", 1024*1024).start();
+	}
+	public void loadWekaInfoFromFolder(File folder) throws Exception {
+		FileInputStream f = new FileInputStream(new File(folder, "wekainfo.yay"));
+		Properties p = new Properties();
+		p.load(f);
+		this.name = (String) p.get("wekaname");
+	}
+	
+	
+	public void save() {
+		if (saveFolder == null)
+			saveas(new File(searchFolder, name));
+		else
+			saveas(saveFolder);
+	}
+
+	public void saveas(final File saveFolder) {
+		Runnable save = new Runnable() {public void run() {
+			System.out.println("---------------Starting to save as!");
+			try {
+				eventmanager.fireSaveStartedEvent();
+				saveAllWekaState(saveFolder);
+				eventmanager.fireSaveCompleteEvent(WekaInstrument.this);
+			} catch (Exception e) { 
+				eventmanager.fireSaveFailedEvent();
+				e.printStackTrace(); 
+			} finally {
+				System.out.println("+++++++++++++++Saved as!!!");
+			}}};
+		new Thread(new ThreadGroup("savegroup"), save, "savethread", 1024*1024).start();
+	}	
+	
+	private void saveAllWekaState(File folder) throws IOException {
+		instrument.saveCurrentInstToFolder(folder);
+		wekamanager.save(folder);
+		saveWekaInfoToFolder(folder);
+	}
+	
+	private void saveWekaInfoToFolder(File folder) throws IOException {
+		if (!folder.exists()) folder.mkdirs();
+		File outfile = new File(folder, "wekainfo.yay");
+		if (!outfile.exists()) outfile.createNewFile();
+		FileOutputStream f = new FileOutputStream(outfile);
+//		FileOutputStream f = new FileOutputStream(new File(folder, "wekainfo.yay"));
+		Properties p = new Properties();
+		p.put("wekaname", name);
+		p.store(f, "weka instrument settings");
+		f.close();
+	}
 	
 	public void setSaveFolder(File f) {
 		this.saveFolder = f;
 		if (this.wekamanager != null) this.wekamanager.setSaveDir(f);
 	}
-	public void load(final String name) {
-		Runnable save = new Runnable() {public void run() {
-			System.out.println("---------------Starting to load!");
-			instrument.setInstrument(OSCInstrument.name);
-			try {
-				
-				
-				eventmanager.fireLoadStartedEvent();
-				makeWekaManager(name);
-				WekaInstrument.this.name = name;
-				eventmanager.fireLoadCompleteEvent(WekaInstrument.this);
-				
-				
-			} catch (Exception e) 
-				{e.printStackTrace();}
-			finally{
-				System.out.println("+++++++++++++++Loaded!!!");
-			}}};
-		new Thread(new ThreadGroup("loadgroup"), save, "loadthread", 1024*1024).start();
-	}
-	
-	public void save() {
-		saveas(name);
-	}
 
-	public void saveas(final String name) {
-		Runnable save = new Runnable() {public void run() {
-			System.out.println("---------------Starting to save as!");
-			try {
-				eventmanager.fireSaveStartedEvent();
-				File savefile = wekamanager.save(name);
-				instrument.saveCurrentInstToFolder(savefile);
-				WekaInstrument.this.name = name;
-				eventmanager.fireSaveCompleteEvent(WekaInstrument.this);
-			} catch (Exception e) { e.printStackTrace(); }
-			finally {
-			System.out.println("+++++++++++++++Saved as!!!");
-			}}};
-		new Thread(new ThreadGroup("savegroup"), save, "savethread", 1024*1024).start();
-	}
+
+	
+
 	
 	
 	public String[] getSavedInstances() {
-		File[] files = saveFolder.listFiles();
+		File[] files = searchFolder.listFiles();
 		ArrayList<String> stringfiles = new ArrayList<String>();
 		for (File f : files) {
 			if (f.isDirectory()) {
+//				try {
+//					FileInputStream proptestfile = new FileInputStream(new File(f, "wekainfo.yay"));
+//					Properties p = new Properties();
+//					p.load(proptestfile);
+//					stringfiles.add((String) p.get("wekaname"));
+//				} catch (Exception e) { e.printStackTrace(); }
 				stringfiles.add(f.getName());
 			}
 		}
@@ -162,7 +210,7 @@ public class WekaInstrument implements TouchListener  {
 				System.out.println("----Begin offthread training (with larger stack)");
 				mode = TRAINING;
 				eventmanager.fireWekaTrainBegin(wekamanager);
-				wekamanager.train();
+				wekamanager.trainMultithread();
 				eventmanager.fireWekaTrainEnd(wekamanager);
 				mode = PERFORMING;
 				System.out.println("----end offthread training");
@@ -238,7 +286,7 @@ public class WekaInstrument implements TouchListener  {
 		}
 		else if (mode == RECORDING) {
 			System.out.println("recording!");
-			wekamanager.addToTrain(featurevector, instrument.getInstrumentParametersAsDouble());
+			wekamanager.addToTrain(featurevector, instrument.getInstrumentParametersAsDouble(), instrument.getParameterMask());
 			//TODO make this event
 			eventmanager.fireWekaTrainEvent(wekamanager);
 		}

@@ -27,6 +27,10 @@ public class OSCInstrument extends Instrument {
 	}
 	          
 	          
+	public String getName() {
+		return name;
+	}
+
 	
 	@Override
 	public void start() {

@@ -80,22 +80,38 @@ public class WekaInstrumentEventManager {
 	
 
 	public void fireSaveStartedEvent() {
+		System.out.println("Firing savestartedevent");
 		for (WekaInstListener l : wekaInstListeners) {
 			l.startSavingSetup();
 		}
 	}
+	public void fireSaveFailedEvent() {
+		System.out.println("Firing savefailed");
+		for (WekaInstListener l : wekaInstListeners) {
+			l.saveFailed();
+		}
+	}
 	public void fireSaveCompleteEvent(WekaInstrument inst) {
+		System.out.println("Firing savecompletevent");
 		for (WekaInstListener l : wekaInstListeners) {
 			l.finishedSavingSetup(inst);
 		}
 	}
 	
 	public void fireLoadStartedEvent() {
+		System.out.println("Firing loadstartedevent");
 		for (WekaInstListener l : wekaInstListeners) {
 			l.startLoadingSetup();
 		}
 	}
+	public void fireLoadFailedEvent() {
+		System.out.println("Firing loadfailed");
+		for (WekaInstListener l : wekaInstListeners) {
+			l.loadFailed();
+		}
+	}
 	public void fireLoadCompleteEvent(WekaInstrument inst) {
+		System.out.println("Firing loadfinishedevent");
 		for (WekaInstListener l : wekaInstListeners) {
 			l.finishedLoadingSetup(inst);
 		}

@@ -2,19 +2,23 @@ package com.rj.research.uiuc.gesturesound.android;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.rj.research.uiuc.gesturesound.R;
 import com.rj.research.uiuc.gesturesound.audio.Parameter;
 
 
-public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeListener {
+public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeListener, OnCheckedChangeListener {
 	private final static int SLIDER_MAX = 100;
 	SeekBar seekbar;
 	TextView paramvalue;
 	TextView title;
+	CheckBox checkbox;
 	SettingsChangedListener callback;
 	float max;
 	float min;
@@ -39,6 +43,10 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 		title.setText(p.getName());
 		paramvalue = (TextView) this.findViewById(R.id.slider_value);
 		paramvalue.setText(p.getValue()+"");
+		checkbox = (CheckBox) this.findViewById(R.id.slider_checkbox);
+		checkbox.setChecked(true);
+		checkbox.setOnCheckedChangeListener(this);
+
 	}
 	
 	public void setValue(float value) {
@@ -90,6 +98,13 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 	public void expand() {
 		seekbar.setVisibility(VISIBLE);
 		title.setVisibility(VISIBLE);
+	}
+
+
+	@Override
+	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+		param.setEnabled(arg1);
+		callback.settingsEnabledState(param, arg1);
 	}
 
 	

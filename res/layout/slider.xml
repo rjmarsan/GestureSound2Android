@@ -4,6 +4,12 @@
     android:layout_height="wrap_content"
     >
     
+   <CheckBox android:id="@+id/slider_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_alignParentTop="true"
+    	android:layout_alignParentRight="true"
+        />
    <TextView
     	android:id="@+id/slider_value"
     	android:layout_width="35dip"
@@ -13,7 +19,7 @@
     	android:gravity="right"
     	android:singleLine="true"
     	android:layout_alignParentTop="true"
-    	android:layout_alignParentRight="true"
+    	android:layout_toLeftOf="@+id/slider_checkbox"
     	/>
    <SeekBar
     	android:id="@+id/slide_bar"

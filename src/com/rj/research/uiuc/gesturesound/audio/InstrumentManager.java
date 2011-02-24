@@ -1,12 +1,11 @@
 package com.rj.research.uiuc.gesturesound.audio;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
 
 import com.rj.research.uiuc.gesturesound.WekaInstrument;
 import com.rj.research.uiuc.gesturesound.audio.instruments.Instrument;
@@ -26,39 +25,26 @@ public class InstrumentManager {
 		possibleInstruments.put(OSCInstrument.name, OSCInstrument.class);
 	}
 	
-	public void saveCurrentInstToFolder(File folder) {
-		try {
-			File savefile = new File(folder, "instrument.inst");
-			if (!folder.exists()) savefile.mkdirs();
-			BufferedWriter out = new BufferedWriter(new FileWriter(savefile));
-			out.write(currentInstrument.name);
-			out.close();
-		}catch(Exception e) { e.printStackTrace(); }
+	public void saveCurrentInstToFolder(File folder) throws IOException {
+		if (!folder.exists()) folder.mkdirs();
+		File outfile = new File(folder, "instrument.inst");
+		FileOutputStream f = new FileOutputStream(outfile);
+		Properties p = new Properties();
+		p.put("instrumentname", currentInstrument.getName());
+		p.store(f, "instrument settings");
+		f.close();
 	}
 	
-	public void loadCurrentInstFromFolder(File folder) {
-		try {
-			File savefile = new File(folder, "instrument.inst");
-			String text = InstrumentManager.readTextFile(savefile);
-			setInstrument(text);
-		}catch(Exception e) { e.printStackTrace(); }
+	public void loadCurrentInstFromFolder(File folder) throws IOException {
+		FileInputStream f = new FileInputStream(new File(folder, "instrument.inst"));
+		Properties p = new Properties();
+		p.load(f);
+		String name = (String) p.get("instrumentname");
+		System.out.println("Loading current inst setting... name:"+name);
+		setInstrument(name);
 	}
 	
-	public static String readTextFile(File name) throws IOException {
-		StringBuffer sb = new StringBuffer(1024);
-		BufferedReader reader = new BufferedReader(new FileReader(name));
-				
-		char[] chars = new char[1024];
-		int numRead = 0;
-		while( (numRead = reader.read(chars)) > -1){
-			sb.append(String.valueOf(chars));	
-		}
 
-		reader.close();
-
-		return sb.toString();
-	}
-	
 	public Instrument getInstrument() {
 		return currentInstrument;
 	}
@@ -100,19 +86,29 @@ public class InstrumentManager {
 		return true;
 	}
 
-
+	double[] paramvals = {};
 	public double[] getInstrumentParametersAsDouble() {
 		Parameter[] params = getInstrumentParameters();
-		double[] out = new double[params.length];
-		for (int i=0;i<out.length;i++) {
-			out[i] = params[i].getValue();
-			System.out.println("Param: "+params[i].getName()+" val:"+out[i]);
+		if (paramvals.length != params.length) paramvals = new double[params.length];
+		for (int i=0;i<paramvals.length;i++) {
+			paramvals[i] = params[i].getValue();
+			System.out.println("Param: "+params[i].getName()+" val:"+paramvals[i]);
 		}
-		return out;
+		return paramvals;
+	}
+	
+	boolean[] parammask = {};
+	public boolean[] getParameterMask() {
+		Parameter[] params = getInstrumentParameters();
+		if (parammask.length != params.length) parammask = new boolean[params.length];
+		for (int i=0;i<parammask.length;i++) {
+			parammask[i] = params[i].isEnabled();
+			System.out.println("Param: "+params[i].getName()+" enabled:"+parammask[i]);
+		}
+		return parammask;
 	}
 
-
 	public String getName() {
-		return currentInstrument.name;
+		return currentInstrument.getName();
 	}
 }

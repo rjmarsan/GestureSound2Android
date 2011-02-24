@@ -1,6 +1,16 @@
 package wekinator.controller;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import wekinator.LearningSystem;
 import wekinator.SimpleDataset;
@@ -8,20 +18,26 @@ import wekinator.LearningAlgorithms.LearningAlgorithm;
 import wekinator.LearningAlgorithms.NNLearningAlgorithm;
 
 public class WekinatorManager {
+	private final static int MAX_THREAD_COUNT = 8;
 	
 	public interface TrainCallback {
 		public void trainComplete(WekinatorManager m);
 	}
 	
 	
-	public File SETTINGS_DIR;
-	public String name;
+	public File SETTINGS_DIR=new File(".");
 	private LearningSystem learnsys;
 	private LearningAlgorithm[] learnarray;
 	private SimpleDataset data;
+	
+	private int numInParams;
+	private int numOutParams;
+	
+	private boolean[] everythingever;
 
 	public WekinatorManager(int numInParams, int numOutParams) {
-		name = "Test___";
+		this.numInParams = numInParams;
+		this.numOutParams = numOutParams;
 		learnsys = makeLearningSystem(numOutParams);
 		learnarray = new LearningAlgorithm[numOutParams];
 		for (int i=0;i<numOutParams;i++) {
@@ -30,16 +46,23 @@ public class WekinatorManager {
 		data = makeDataset(numInParams, numOutParams);
 		learnsys.setDataset(data);
 		learnsys.setLearners(learnarray);
+        everythingever = new boolean[numInParams];
+        for (int i = 0; i < numInParams; i++) {
+            //  learnerEnabled[i] = true;
+        	everythingever[i] = true;
+        }
 	}
 	
 	public WekinatorManager(String name, int numInParams, int numOutParams, File folder) {
 		try {
 			SETTINGS_DIR = folder;
-			File savefolder = new File(SETTINGS_DIR, name);
+			this.numInParams = numInParams;
+			this.numOutParams = numOutParams;
+			File savefolder = SETTINGS_DIR;
 			if (!savefolder.exists()) new File(savefolder, "test").mkdirs();
 			learnsys = LearningSystem.readFromFile(new File(savefolder, "learnsys.yay"));
-			learnarray = new LearningAlgorithm[numInParams];
-			for (int i=0;i<numInParams;i++) {
+			learnarray = new LearningAlgorithm[numOutParams];
+			for (int i=0;i<numOutParams;i++) {
 				learnarray[i] = LearningAlgorithm.readFromFile(new File(savefolder, "learnalg_"+i+".yay"));
 			}
 			data = SimpleDataset.readFromFile(new File(savefolder, "dataset.yay"));
@@ -48,18 +71,53 @@ public class WekinatorManager {
 		}catch(Exception e) { e.printStackTrace(); }
 	}
 	
-	public String getName() {
-		return name;
+	/**
+	 * Load from this exact folder.
+	 * @param folder
+	 * @throws Exception 
+	 */
+	public WekinatorManager(File folder) throws Exception {
+		//try {
+			loadSettings(new File(folder, "wekasettings.yay"));
+			SETTINGS_DIR = folder;
+			File savefolder = folder;
+			if (!savefolder.exists()) new File(savefolder, "test").mkdirs();
+			learnsys = LearningSystem.readFromFile(new File(savefolder, "learnsys.yay"));
+			learnarray = new LearningAlgorithm[numOutParams];
+			for (int i=0;i<numOutParams;i++) {
+				learnarray[i] = LearningAlgorithm.readFromFile(new File(savefolder, "learnalg_"+i+".yay"));
+			}
+			data = SimpleDataset.readFromFile(new File(savefolder, "dataset.yay"));
+			learnsys.setDataset(data);
+			learnsys.setLearners(learnarray);
+		//}catch(Exception e) { e.printStackTrace(); }
 	}
+	
+	private void loadSettings(File infile) throws IOException {
+		FileInputStream f = new FileInputStream(infile);
+		Properties p = new Properties();
+		p.load(f);
+		
+		numInParams = Integer.parseInt((String) p.get("insize"));
+		numOutParams = Integer.parseInt((String) p.get("outsize"));
+//		name = (String) p.get("name");
+
+	}
+	
+//	public String getName() {
+//		return name;
+//	}
 	
 	public void setSaveDir(File dir) {
 		this.SETTINGS_DIR = dir;
 	}
 		
 	public File save() {
-		File savefolder = new File(SETTINGS_DIR, name);
+		System.out.println("Savefolder: settingsdir:"+SETTINGS_DIR);
+		File savefolder = SETTINGS_DIR;
 		try {
-			if (!savefolder.exists()) new File(savefolder, "test").mkdirs();
+			if (!savefolder.exists()) new File(savefolder, "wekasettings.yay").mkdirs();
+			saveSettings(new File(savefolder, "wekasettings.yay"));
 			learnsys.writeToFile(new File(savefolder, "learnsys.yay"));
 			for (int i=0;i<learnarray.length;i++) {
 				learnarray[i].writeToFile(new File(savefolder, "learnalg_"+i+".yay"));
@@ -70,8 +128,19 @@ public class WekinatorManager {
 		return null;
 	}
 	
-	public File save(String name) {
-		this.name = name;
+	private void saveSettings(File outfile) throws IOException {
+		FileOutputStream f = new FileOutputStream(outfile);
+		Properties p = new Properties();
+		p.put("insize", ""+numInParams);
+		p.put("outsize", ""+numOutParams);
+//		p.put("name", ""+name);
+		p.store(f, "testing");
+		f.close();
+	}
+	
+	public File save(File outfolder) {
+//		this.name = name;
+		this.SETTINGS_DIR = outfolder;
 		return save();
 	}
 	
@@ -98,6 +167,10 @@ public class WekinatorManager {
 	
 	
 	public void addToTrain(double[] in, double[] out) {
+		addToTrain(in, out, null);
+	}
+	public void addToTrain(double[] in, double[] out, boolean[] filter) {
+		learnsys.setParamMask(filter);
 		learnsys.addToTraining(in, out);
 		System.out.println("Size of training set:"+learnsys.getDataset().getNumDatapoints());
 	}
@@ -113,23 +186,24 @@ public class WekinatorManager {
 	}
 	
 	public void trainMultithread() {
-		ThreadGroup group = new ThreadGroup("TrainingGroup");
-		Thread tasks[] = new Thread[learnarray.length];
-		for (int i=0; i<learnarray.length;i++) {
-			final int task = i;
-			Runnable t = new Runnable() {
-				public void run() {
-					learnsys.train(task);
-				}
-			};
-			tasks[i] = new Thread(group, t);
+		Collection<Callable<Void>> stuff = new ArrayList<Callable<Void>>();
+		for (int i=0; i<learnarray.length; i++) {
+			final int tasknum = i;
+			Callable<Void> task = new Callable<Void>() {
+				public Void call() throws Exception {
+					System.out.println("Training : "+tasknum);
+					learnsys.train(tasknum);
+					System.out.println("finished : "+tasknum);
+					return null;
+				}};
+			stuff.add(task);
 		}
-		for (Thread t : tasks) {
-			try {
-				t.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+		ExecutorService execpool = Executors.newFixedThreadPool(MAX_THREAD_COUNT);
+		try {
+			for (Future f : execpool.invokeAll(stuff)) {
+				f.get();
 			}
+		} catch (Exception e) {
 		}
 	}
 	

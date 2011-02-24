@@ -7,6 +7,8 @@ public class Parameter {
 	public final static int SELECTOR = 2; //integer values from 0 to n
 	int type;
 	
+	boolean enabled = true;
+	
 	//continuous parameters
 	float cont_min = 0;
 	float cont_max = 1;
@@ -129,6 +131,14 @@ public class Parameter {
 			}
 		}
 		return -1;//error!
+	}
+	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	
+	public boolean isEnabled() {
+		return this.enabled;
 	}
 
 }

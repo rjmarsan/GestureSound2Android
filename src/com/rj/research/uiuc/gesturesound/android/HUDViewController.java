@@ -2,10 +2,9 @@ package com.rj.research.uiuc.gesturesound.android;
 
 import wekinator.controller.WekinatorManager;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -15,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rj.research.uiuc.gesturesound.R;
 import com.rj.research.uiuc.gesturesound.WekaInstrument;
@@ -43,6 +43,8 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 	TextView trainingview;
 	TextView trainingsamples;
 	TextView name;
+	
+	ProgressDialog currentDialog;
 	
 	public HUDViewController(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -118,7 +120,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 				builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {  
 					public void onClick(DialogInterface dialog, int whichButton) {  
 					  String value = text.getText().toString();  
-					  	weka.newInst(value);
+					  	weka.makeNewWekaInstrument(value);
 					}  
 					}); 
 				AlertDialog alert = builder.create();
@@ -219,11 +221,27 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 			if (trainingview != null) trainingview.setText(text);
 			}});
 	}
+	
+	public void makeDialog(String message) {
+		currentDialog = ProgressDialog.show(getContext(), "",  message, true);
+		currentDialog.show();
+	}
+	
+	public void dismissDialog() {
+		if (currentDialog != null) {
+			currentDialog.dismiss();
+			currentDialog = null;
+		}
+	}
+	public void toast(String text) {
+		Toast.makeText(getContext(), text, 3).show();
+	}
 
 	@Override
 	public void finishedTraining(WekinatorManager weka) {
 		mHandle.post(new Runnable() { public void run() {
 		if (trainingview != null) trainingview.setText("Done!");
+		dismissDialog();
 		}});
 	}
 
@@ -231,6 +249,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 	public void startingTraining(WekinatorManager weka) {
 		mHandle.post(new Runnable() { public void run() {
 			if (trainingview != null) trainingview.setText("Training...");
+			makeDialog("Training (this could take a while)");
 			}});	
 	}
 
@@ -247,6 +266,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 	@Override
 	public void finishedLoadingSetup(final WekaInstrument inst) {
 		mHandle.post(new Runnable() { public void run() {
+			dismissDialog();
 			if (name != null) name.setText(inst.name);
 			if (trainingsamples != null) trainingsamples.setText(inst.wekamanager.getSamples()+"samples");
 			}});
@@ -255,22 +275,38 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 	@Override
 	public void finishedSavingSetup(final WekaInstrument inst) {
 		mHandle.post(new Runnable() { public void run() {
+			dismissDialog();
 			if (name != null) name.setText(inst.name);
 			}});
 	}
 
 	@Override
 	public void startLoadingSetup() {
-		// TODO Auto-generated method stub
-		
+		mHandle.post(new Runnable() { public void run() {
+			makeDialog("Loading. Please wait...");
+		}});
 	}
 
 	@Override
 	public void startSavingSetup() {
-		// TODO Auto-generated method stub
-		
-	}
+		mHandle.post(new Runnable() { public void run() {
+			makeDialog("Saving. Please wait...");
+		}});	}
 
+	@Override
+	public void loadFailed() {
+		mHandle.post(new Runnable() { public void run() {
+			dismissDialog();
+			toast("Load failed!");
+		}});
+	}
+	@Override
+	public void saveFailed() {
+		mHandle.post(new Runnable() { public void run() {
+			dismissDialog();
+			toast("Save failed!");
+		}});
+	}
 
 
 }
