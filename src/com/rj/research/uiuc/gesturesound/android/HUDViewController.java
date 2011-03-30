@@ -39,6 +39,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 	Button newbutton;
 	Button playbutton;
 	Button recordbutton;
+	Button testingbutton;
 	
 	TextView trainingview;
 	TextView trainingsamples;
@@ -88,6 +89,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 			public void onClick(View arg0) {
 				Log.d("Play button", "Pressed and playing!");
 				weka.perform();
+				configurePlayButton();
 			}	
 		});
 		
@@ -96,6 +98,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 			public void onClick(View arg0) {
 				weka.record();
 				if (trainingview != null) trainingview.setText("Recording");
+				configurePlayButton();
 			}	
 		});
 		
@@ -107,7 +110,19 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 
 		
 		name = (TextView) this.findViewById(R.id.weka_name);
-
+		
+		testingbutton = (Button) this.findViewById(R.id.toggle_test_button);
+		testingbutton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				if (weka.mode() == WekaInstrument.TESTING) {
+					weka.stopTesting();
+					testingbutton.setText("test");
+				} else {
+					weka.startTesting();
+					testingbutton.setText("stop");
+				}
+			}
+		});
 		
 		newbutton = (Button) this.findViewById(R.id.new_button);
 		newbutton.setOnClickListener(new OnClickListener() {
@@ -178,6 +193,16 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 		});
 	}
 	
+	private void configurePlayButton() {
+		if (weka.mode() == WekaInstrument.RECORDING) {
+			playbutton.setText("Train");
+		} else if (weka.mode() == WekaInstrument.PERFORMING) {
+			playbutton.setText("Stop");
+		} else {
+			playbutton.setText("Play");
+		}
+	}
+	
 	public void showhide() {
 		hidden = !hidden;
 		if (hidden) {
@@ -227,6 +252,18 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 		currentDialog.show();
 	}
 	
+	public void makeDialog(String title, String message) {
+		currentDialog = ProgressDialog.show(getContext(), title,  message, true);
+		currentDialog.show();
+	}
+
+	public void updateDialog(String title, String message) {
+		if (currentDialog != null) {
+			currentDialog.setTitle(title);
+			currentDialog.setMessage(message);
+		}
+	}
+	
 	public void dismissDialog() {
 		if (currentDialog != null) {
 			currentDialog.dismiss();
@@ -244,12 +281,18 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 		dismissDialog();
 		}});
 	}
-
+	@Override
+	public void trainingProgress(WekinatorManager weka,final int stepsFinished,
+			final int totalSteps, final String message) {
+		mHandle.post(new Runnable() { public void run() {
+			updateDialog("Training "+stepsFinished+"/"+totalSteps, message);
+		}});
+	}
 	@Override
 	public void startingTraining(WekinatorManager weka) {
 		mHandle.post(new Runnable() { public void run() {
 			if (trainingview != null) trainingview.setText("Training...");
-			makeDialog("Training (this could take a while)");
+			makeDialog("Training", "Remote training beginning");
 			}});	
 	}
 
@@ -307,6 +350,8 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 			toast("Save failed!");
 		}});
 	}
+
+
 
 
 }

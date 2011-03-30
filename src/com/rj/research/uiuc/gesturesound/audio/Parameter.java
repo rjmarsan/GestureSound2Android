@@ -2,6 +2,7 @@ package com.rj.research.uiuc.gesturesound.audio;
 
 public class Parameter {
 	String name;
+	String internal_name;
 	public final static int CONTINUOUS = 0;  //any value from min to max
 	public final static int ARBITRARY_SELECTOR = 1; //any values in the list
 	public final static int SELECTOR = 2; //integer values from 0 to n
@@ -25,10 +26,14 @@ public class Parameter {
 	float value = 0;
 	int index = 0;
 	
-	public Parameter(String name, int type, double value) {
+	public Parameter(String name, String internal_name, int type, double value) {
 		this.name = name;
 		this.type = type;
+		this.internal_name = internal_name;
 		setValue(value);
+	}
+	public Parameter(String name, int type, double value) {
+		this(name,name,type,value);
 	}
 	
 	/**
@@ -94,6 +99,9 @@ public class Parameter {
 	
 	public String getName() {
 		return name;
+	}
+	public String getInternalName() {
+		return internal_name;
 	}
 	
 	public float getRange() {

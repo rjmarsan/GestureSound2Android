@@ -60,6 +60,12 @@ public class WekaInstrumentEventManager {
 		}
 	}
 	
+	public void fireWekaTrainUpdate(WekinatorManager man, int up, int len, String msg) {
+		for (WekaClassifyListener l : wekaClassifyListeners) {
+			l.trainingProgress(man, up, len, msg);
+		}
+	}
+	
 	public void fireWekaTrainEnd(WekinatorManager man) {
 		for (WekaClassifyListener l : wekaClassifyListeners) {
 			l.finishedTraining(man);

@@ -8,12 +8,15 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import wekinator.controller.WekinatorManager;
+import android.content.Context;
 
 import com.rj.processing.mt.Cursor;
 import com.rj.processing.mt.TouchListener;
+import com.rj.research.uiuc.gesturesound.android.RemoteSolver2;
+import com.rj.research.uiuc.gesturesound.android.RemoteSolver2.RemoteSolverCallback;
 import com.rj.research.uiuc.gesturesound.audio.AudioManager;
 import com.rj.research.uiuc.gesturesound.audio.InstrumentManager;
-import com.rj.research.uiuc.gesturesound.audio.instruments.OSCInstrument;
+import com.rj.research.uiuc.gesturesound.audio.instruments.PDSynth;
 import com.rj.research.uiuc.gesturesound.gestures.extractors.ExtractorManager;
 import com.rj.research.uiuc.gesturesound.listeners.InstrumentListener;
 import com.rj.research.uiuc.gesturesound.listeners.WekaClassifyListener;
@@ -25,6 +28,10 @@ public class WekaInstrument implements TouchListener  {
 	public final static int PERFORMING = 1;
 	public final static int RECORDING = 2;
 	public final static int TRAINING = 3;
+	public final static int TESTING = 3;
+	
+	public boolean NETWORK_TRAIN = true;
+	public Context context; //sorry I had to break some non-android generality here.
 	
 	public int mode = NOTHING;
 	
@@ -36,7 +43,7 @@ public class WekaInstrument implements TouchListener  {
 	public AudioManager audiomanager;
 	public ExtractorManager extractormanager;
 	public InstrumentManager instrument;
-	
+ 
 	
 	public File searchFolder;
 	public File saveFolder;
@@ -81,7 +88,7 @@ public class WekaInstrument implements TouchListener  {
 		eventmanager.fireLoadStartedEvent();
 		this.name = name;
 		this.saveFolder = new File(searchFolder, name);
-		instrument.setInstrument(OSCInstrument.name);
+		instrument.setInstrument(PDSynth.name);
 		int in = extractormanager.getFeatureVectorSize();
 		int out = instrument.getInstrumentParameters().length;
 		this.wekamanager = new WekinatorManager(in,out);
@@ -105,7 +112,7 @@ public class WekaInstrument implements TouchListener  {
 					e.printStackTrace();
 				}
 				 }};
-		new Thread(new ThreadGroup("loadgroup"), save, "loadthread", 1024*1024).start();
+		new Thread(new ThreadGroup("loadgroup"), save, "loadthread", 1024*1024*4).start();
 	}
 	public void loadWekaInfoFromFolder(File folder) throws Exception {
 		FileInputStream f = new FileInputStream(new File(folder, "wekainfo.yay"));
@@ -135,7 +142,7 @@ public class WekaInstrument implements TouchListener  {
 			} finally {
 				System.out.println("+++++++++++++++Saved as!!!");
 			}}};
-		new Thread(new ThreadGroup("savegroup"), save, "savethread", 1024*1024).start();
+		new Thread(new ThreadGroup("savegroup"), save, "savethread", 1024*1024*4).start();
 	}	
 	
 	private void saveAllWekaState(File folder) throws IOException {
@@ -155,7 +162,7 @@ public class WekaInstrument implements TouchListener  {
 		p.store(f, "weka instrument settings");
 		f.close();
 	}
-	
+  
 	public void setSaveFolder(File f) {
 		this.saveFolder = f;
 		if (this.wekamanager != null) this.wekamanager.setSaveDir(f);
@@ -187,6 +194,11 @@ public class WekaInstrument implements TouchListener  {
 		return outarray;
 	}
 	
+	
+	public void setContext(Context context) {
+		this.context = context;
+	}
+	
 	/**
 	 * Set the global state of the WekaInstrument.   
 	 */
@@ -205,21 +217,53 @@ public class WekaInstrument implements TouchListener  {
 	public void train() {
 		this.mode = NOTHING;
 		System.out.println("Training!");
-		Runnable task = new Runnable() {
-			public void run() {
-				System.out.println("----Begin offthread training (with larger stack)");
-				mode = TRAINING;
-				eventmanager.fireWekaTrainBegin(wekamanager);
-				wekamanager.trainMultithread();
-				eventmanager.fireWekaTrainEnd(wekamanager);
-				mode = PERFORMING;
-				System.out.println("----end offthread training");
-			}
-		};
-		new Thread(new ThreadGroup("traingroup"), task, "trainingthread", 1024*1024).start();
+		if (NETWORK_TRAIN) {
+			final Runnable task2 = new Runnable() {
+				public void run() {
+					System.out.println("----Begin remote training (with larger stack)");
+					mode = TRAINING;
+					eventmanager.fireWekaTrainBegin(wekamanager);
+					RemoteSolver2 s = new RemoteSolver2();
+					try {
+						wekamanager = s.solve(wekamanager, context, new RemoteSolverCallback() {
+							public void progress(RemoteSolver2 solver, int stepsComplete, int totalSteps, String status) {
+								eventmanager.fireWekaTrainUpdate(wekamanager, stepsComplete, totalSteps, status);
+							}});
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					eventmanager.fireWekaTrainEnd(wekamanager);
+					mode = PERFORMING;
+					System.out.println("----end remote training");
+				}
+			};
+			new Thread(new ThreadGroup("traingroup"), task2, "trainingthread", 1024*1024*4).start();
+		} else {
+			final Runnable task = new Runnable() {
+				public void run() {
+					System.out.println("----Begin offthread training (with larger stack)");
+					mode = TRAINING;
+					eventmanager.fireWekaTrainBegin(wekamanager);
+					wekamanager.trainMultithread();
+					eventmanager.fireWekaTrainEnd(wekamanager);
+					mode = PERFORMING;
+					System.out.println("----end offthread training");
+				}
+			};
+			new Thread(new ThreadGroup("traingroup"), task, "trainingthread", 1024*1024*4).start();
+		}
+
 	}
 	public void doNothing() {
 		this.mode = NOTHING;
+	}
+	public void startTesting() {
+		this.mode = TESTING;
+		instrument.getInstrument().gestureStart();
+	}
+	public void stopTesting() {
+		this.mode = NOTHING;
+		instrument.getInstrument().gestureStop();
 	}
 	public int mode() {
 		return this.mode;
@@ -236,12 +280,14 @@ public class WekaInstrument implements TouchListener  {
 	 *                                                             SOUND!
 	 */
 	public void touchDown(Cursor c) {
+		instrument.getInstrument().gestureStart();
 		extractormanager.touchDown(c);
 		updateGenerator(c);
 	}
 	public void touchUp(Cursor c) {
 		extractormanager.touchUp(c);
 		updateGenerator(c);
+		instrument.getInstrument().gestureStop();
 	}
 	public void touchMoved(Cursor c) {
 		updateGenerator(c);

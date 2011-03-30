@@ -65,7 +65,7 @@
 		<com.rj.research.uiuc.gesturesound.android.InstrumentViewController
 			android:id="@+id/instrument_settings"
 			android:layout_width="fill_parent"
-			android:layout_height="150dip"
+			android:layout_height="wrap_content"
 			android:orientation="vertical"
 			android:background="#44990011"
 			android:layout_below="@id/weka_controls"
@@ -81,6 +81,14 @@
 			android:layout_alignParentLeft="true"
 			android:maxLines="4"
 			android:text="debug view!"
+			/>
+		<Button
+			android:id="@+id/toggle_test_button"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/instrument_settings"
+			android:layout_alignParentRight="true"
+			android:text="Test"
 			/>
 		
 		

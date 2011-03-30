@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.Callable;
@@ -60,11 +61,14 @@ public class WekinatorManager {
 			this.numOutParams = numOutParams;
 			File savefolder = SETTINGS_DIR;
 			if (!savefolder.exists()) new File(savefolder, "test").mkdirs();
+			System.out.println("Inflating learnsys!");
 			learnsys = LearningSystem.readFromFile(new File(savefolder, "learnsys.yay"));
 			learnarray = new LearningAlgorithm[numOutParams];
 			for (int i=0;i<numOutParams;i++) {
+				System.out.println("Inflating learnalg: "+i);
 				learnarray[i] = LearningAlgorithm.readFromFile(new File(savefolder, "learnalg_"+i+".yay"));
 			}
+			System.out.println("Inflating dataset!");
 			data = SimpleDataset.readFromFile(new File(savefolder, "dataset.yay"));
 			learnsys.setDataset(data);
 			learnsys.setLearners(learnarray);
@@ -111,12 +115,15 @@ public class WekinatorManager {
 	public void setSaveDir(File dir) {
 		this.SETTINGS_DIR = dir;
 	}
+	public File getSaveDir() {
+		return SETTINGS_DIR ;
+	}
 		
 	public File save() {
 		System.out.println("Savefolder: settingsdir:"+SETTINGS_DIR);
 		File savefolder = SETTINGS_DIR;
 		try {
-			if (!savefolder.exists()) new File(savefolder, "wekasettings.yay").mkdirs();
+			if (!savefolder.exists()) savefolder.mkdirs();
 			saveSettings(new File(savefolder, "wekasettings.yay"));
 			learnsys.writeToFile(new File(savefolder, "learnsys.yay"));
 			for (int i=0;i<learnarray.length;i++) {
@@ -215,6 +222,26 @@ public class WekinatorManager {
 		return learnsys.getDataset().getNumDatapoints();
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((SETTINGS_DIR == null) ? 0 : SETTINGS_DIR.hashCode());
+		result = prime * result + ((data == null) ? 0 : data.hashCode());
+		result = prime * result + Arrays.hashCode(everythingever);
+		result = prime * result + Arrays.hashCode(learnarray);
+		result = prime * result
+				+ ((learnsys == null) ? 0 : learnsys.hashCode());
+		result = prime * result + numInParams;
+		result = prime * result + numOutParams;
+		return result;
+	}
+
+	
+
+	
+	
 	
 	
 	

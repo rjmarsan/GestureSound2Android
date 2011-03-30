@@ -18,7 +18,7 @@ public class OSCInstrument extends Instrument {
 
 	public OSCInstrument() {
 		Parameter curve = new Parameter("Setting 1", Parameter.CONTINUOUS, 0.5);
-		curve.setMinMax(-1, 1);
+		curve.setMinMax(0, 2);
 		Parameter vel = new Parameter("Setting 2", Parameter.CONTINUOUS, 100);
 		vel.setMinMax(0, 100);
 		parameters = new Parameter[] {
@@ -34,16 +34,25 @@ public class OSCInstrument extends Instrument {
 	
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
-	public void stop() {
-		// TODO Auto-generated method stub
-		
+	public void stop() {		
+	}
+	
+	@Override
+	public void cleanup() {
 	}
 
+	@Override
+	public void gestureStart() {
+	}
+
+	@Override
+	public void gestureStop() {		
+	}
+
+	
 	@Override
 	public void updated() {
 		for (int i=0; i<parameters.length; i++) {

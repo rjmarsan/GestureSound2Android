@@ -10,6 +10,8 @@ import java.util.Properties;
 import com.rj.research.uiuc.gesturesound.WekaInstrument;
 import com.rj.research.uiuc.gesturesound.audio.instruments.Instrument;
 import com.rj.research.uiuc.gesturesound.audio.instruments.OSCInstrument;
+import com.rj.research.uiuc.gesturesound.audio.instruments.PDSynth;
+import com.rj.research.uiuc.gesturesound.audio.instruments.SimplePDInstrument;
 
 public class InstrumentManager {
 	WekaInstrument parent;
@@ -23,6 +25,8 @@ public class InstrumentManager {
 		this.parent = parent;
 		possibleInstruments = new HashMap<String, Class<?>>();
 		possibleInstruments.put(OSCInstrument.name, OSCInstrument.class);
+		possibleInstruments.put(SimplePDInstrument.name, SimplePDInstrument.class);
+		possibleInstruments.put(PDSynth.name, PDSynth.class);
 	}
 	
 	public void saveCurrentInstToFolder(File folder) throws IOException {
@@ -73,7 +77,13 @@ public class InstrumentManager {
 	 */
 	public boolean setInstrument(String inst) {
 		try {
+			if (currentInstrument != null) { 
+				currentInstrument.stop();
+				currentInstrument.cleanup();
+			}
 			currentInstrument = (Instrument) (possibleInstruments.get(inst)).newInstance();
+			currentInstrument.setWeka(parent);
+			currentInstrument.start();
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 			return false;

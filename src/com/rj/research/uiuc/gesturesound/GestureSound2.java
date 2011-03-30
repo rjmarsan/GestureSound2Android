@@ -45,6 +45,7 @@ public class GestureSound2 extends PApplet {
 		File settingsDir = new File(getFilesDir(), "settings");
 		if (!settingsDir.exists()) settingsDir.mkdirs();
     	instrument = new WekaInstrument(settingsDir);
+    	instrument.setContext(this);
 	}
     
     public void setupUI() {
