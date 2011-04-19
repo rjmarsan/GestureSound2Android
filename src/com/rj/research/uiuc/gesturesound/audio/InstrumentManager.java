@@ -54,9 +54,9 @@ public class InstrumentManager {
 	}
 	
 	
-	public void setNewParameters(double[] paramvector) {
+	public void setNewParameters(double[] paramvector, boolean overwrite) {
 		if (currentInstrument != null) {
-			currentInstrument.updateParameters(paramvector);
+			currentInstrument.updateParameters(paramvector, overwrite);
 			parent.eventmanager.fireInstrumentSettingsEvent(getInstrumentParameters(), currentInstrument, false);
 		}
 	}

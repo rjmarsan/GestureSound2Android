@@ -286,7 +286,7 @@ public class WekaInstrument implements TouchListener  {
 	}
 	public void touchUp(Cursor c) {
 		extractormanager.touchUp(c);
-		updateGenerator(c);
+		//updateGenerator(c);
 		instrument.getInstrument().gestureStop();
 	}
 	public void touchMoved(Cursor c) {
@@ -327,7 +327,7 @@ public class WekaInstrument implements TouchListener  {
 			System.out.println("Performing!");
 			double[] paramvector = wekamanager.classify(featurevector);
 			for (double d : paramvector) System.out.println("D:"+d);
-			instrument.setNewParameters(paramvector);
+			instrument.setNewParameters(paramvector, false);
 			eventmanager.fireWekaClassifyEvent(paramvector);
 		}
 		else if (mode == RECORDING) {

@@ -48,6 +48,10 @@ public class PDSynth extends PDInstrument {
 		zero();
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	private void zero() {
 		PdBase.sendFloat("vibdepth1", 1);
 		PdBase.sendFloat("vibspeed1", 1);

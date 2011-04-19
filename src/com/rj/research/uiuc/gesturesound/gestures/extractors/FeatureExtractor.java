@@ -23,6 +23,7 @@ public class FeatureExtractor {
 	public FeatureMap makeFeatureMap(Cursor c) {
 		for (int i=0; i<qualities.length; i++) {
 			map.featurevec[i] = qualities[i].update(c);
+			System.out.println(""+qualities[i].name+": "+map.featurevec[i]);
 		}
 		return map;
 	}

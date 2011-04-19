@@ -16,10 +16,11 @@ public abstract class Instrument {
 	Parameter[] parameters;
 	WekaInstrument weka;
 	
-	public void updateParameters(double[] in) {
+	public void updateParameters(double[] in, boolean overwrite) {
 		if (parameters == null) return;
 		for (int i=0; i<Math.min(parameters.length, in.length); i++) {
-			parameters[i].setValue(in[i]);
+			if (parameters[i].isEnabled() || overwrite)
+				parameters[i].setValue(in[i]);
 		}
 		updated();
 	}

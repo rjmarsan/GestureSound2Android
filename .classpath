@@ -8,7 +8,5 @@
 	<classpathentry kind="lib" path="assets/Jama-1.0.2.jar"/>
 	<classpathentry kind="lib" path="assets/commons-net-2.2.jar"/>
 	<classpathentry kind="src" path="WekaAndroid_src"/>
-	<classpathentry kind="src" path="PdCore86_jni_libpd_java"/>
-	<classpathentry kind="src" path="PdCore86_src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

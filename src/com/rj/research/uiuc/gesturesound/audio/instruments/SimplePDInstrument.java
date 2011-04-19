@@ -33,6 +33,9 @@ public class SimplePDInstrument extends PDInstrument {
 		patch = this.openPatch("simpleosc.pd");
 	}
  
+	public String getName() {
+		return name;
+	}
 	
 	
 	@Override
