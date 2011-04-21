@@ -44,9 +44,7 @@ public class ExtractorManager {
 	}
 
 	public int getFeatureVectorSize() {
-//		FeatureBox f = new QuadraticFeatureBox(null);
-//		return f.numFeaturesGenerated();
-		return 0;
+		return QuadraticFeatureBox.CURRENT_MAX_FEATURES_GENERATED;
 	}
 	
 }

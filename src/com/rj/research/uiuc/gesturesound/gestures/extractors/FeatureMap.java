@@ -3,6 +3,7 @@ package com.rj.research.uiuc.gesturesound.gestures.extractors;
 import java.util.Arrays;
 
 public class FeatureMap {
+	public final static int NOP = -1;
 	public final static int X = 0;
 	public final static int Y = 1;
 	public final static int VEL_X = 2;

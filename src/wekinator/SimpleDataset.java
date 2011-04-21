@@ -635,6 +635,25 @@ public class SimpleDataset {
     public void startNewTrainingRound() {
         currentTrainingRound++;
     }
+    
+    
+    //TODO TODO TODO: Error in addInstance - wrong parameter value
+    //How do we handle missing features or missing parameters??
+    public void addInstance(double[][] featureVals, double paramVals[], boolean paramMask[], Date timestamp) {
+    	if (featureVals.length != paramVals.length) return;
+        boolean mask[] = new boolean[paramVals.length];
+        for (int i = 0; i < mask.length; i++) {
+            mask[i] = false;
+        }
+        for (int i = 0; i < mask.length; i++) {
+        	if (paramMask[i] == true) {
+	        	mask[i] = true;
+        	}
+            addInstance(featureVals[i], paramVals, mask, timestamp);  
+            mask[i] = false;
+    	
+        }
+    }
 
     //TODO TODO TODO: Error in addInstance - wrong parameter value
     //How do we handle missing features or missing parameters??
@@ -761,39 +780,8 @@ public class SimpleDataset {
         }
     }
 
-    //Deprecated: Don't trust this function!
-    //TODO: Remove!
-    public void setIsFeatureActiveForParameter(boolean isActive, int featNum, int paramNum) {
-        /*      if (featNum < 0 || featNum >= numFeatures || paramNum < 0 || paramNum >= numParams) {
-        throw new IllegalArgumentException("Invalid paramNum or featNum");
 
-        }
 
-        if (featureParamMask[featNum][paramNum] != isActive) {
-        featureParamMask[featNum][paramNum] = isActive;
-        try {
-        updateFilterOld(paramNum);
-        } catch (Exception ex) {
-        System.out.println("Error: Couldn't update filter");
-        Logger.getLogger(SimpleDataset.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        }
-
-        //TODO
-        //If not active, do we really want to delete it? Probably not; keep it around just in case.
-         * */
-    }
-
-    //Deprecated! TODO: remove
-    public boolean isFeatureActiveForParameter(int featNum, int paramNum) {
-        /* if (featNum < 0 || featNum >= numFeatures || paramNum < 0 || paramNum >= numParams) {
-        System.out.println("Error: invalid featNum / paramNum");
-        return false;
-        }
-
-        return featureParamMask[featNum][paramNum]; */
-        return true;
-    }
 
     public void setFeatureName(int featureNum, String name) {
         if (featureNum >= 0 && featureNum < numFeatures) {

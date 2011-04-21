@@ -182,6 +182,13 @@ public class WekinatorManager {
 		System.out.println("Size of training set:"+learnsys.getDataset().getNumDatapoints());
 	}
 	
+	public void addToTrain(double[][] in, double[] out, boolean[] filter) {
+		learnsys.setParamMask(filter);
+		learnsys.addToTraining(in, out);
+		System.out.println("Size of training set:"+learnsys.getDataset().getNumDatapoints());
+	}
+
+	
 	public void train() {
 		for (int i=0; i<learnarray.length;i++) {
 			learnsys.train(i);
@@ -217,6 +224,11 @@ public class WekinatorManager {
 	public double[] classify(double[] in) {
 		return learnsys.classify(in);
 	}
+	
+	public double[] classify(double[][] in) {
+		return learnsys.classify(in);
+	}
+
 
 	public int getSamples() {
 		return learnsys.getDataset().getNumDatapoints();

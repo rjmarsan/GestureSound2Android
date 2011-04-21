@@ -415,7 +415,58 @@ public class LearningSystem {
 //            Logger.getLogger(LearningSystem.class.getName()).log(Level.SEVERE, "Invalid features or parameters");
         }
     }
+    
+    public void addToTraining(double[][] features, double[] params) {
+        //Add to the training dataset.
+        try {
+            dataset.addInstance(features, params, paramMask, new Date());
+        } catch (IllegalArgumentException ex) {
+//            Logger.getLogger(LearningSystem.class.getName()).log(Level.SEVERE, "Invalid features or parameters");
+        }
+    }
 
+
+    public double[] classify(double[][] features) {
+        Instance[] instances = new Instance[features.length];
+        for (int i=0; i < instances.length; i++) {
+        	instances[i]= dataset.convertToClassifiableInstances(features[i])[i];
+        }
+        int next = 0;
+        for (int i = 0; i < numParams; i++) {
+            if (learners[i] != null && learners[i].getTrainingState() == LearningAlgorithm.TrainingState.TRAINED) { //classify whether or not learner enabled
+                if (!paramUsingDistribution[i]) {
+                    try {
+                        outputs[next] = learners[i].classify(instances[i]);
+                        next++;
+                    } catch (Exception ex) {
+                        next++;
+//                        Logger.getLogger(LearningSystem.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    double[] dist = new double[0];
+                    try {
+                        dist = learners[i].distributionForInstance(instances[i]);
+                        for (int j = 0; j < dist.length; j++) {
+                            outputs[next++] = dist[j];
+                        }
+                    } catch (Exception ex) {
+                        next += dist.length;
+//                        Logger.getLogger(LearningSystem.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }
+            } else { //learner not active : keep old values, but advance next
+                if (!paramUsingDistribution[i]) {
+                    next++;
+                } else {
+                    next += numMaxValsForParameter[i];
+                }
+            }
+        }
+        return outputs;
+    }
+    
+    
     public double[] classify(double[] features) {
         Instance[] instances = dataset.convertToClassifiableInstances(features);
         int next = 0;

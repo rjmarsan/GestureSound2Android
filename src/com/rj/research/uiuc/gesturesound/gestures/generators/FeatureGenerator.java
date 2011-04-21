@@ -11,15 +11,18 @@ public class FeatureGenerator {
 		this.type = type;
 	}
 	
+	public FeatureGenerator(int type, int length) {
+		this.LENGTH = length;
+		d = new double[length];
+		for (int i=0;i<length;i++) d[i] = 0;
+	}
+	
 	public int getLength() {
 		return LENGTH;
 	}
 	
 	double[] d = new double[1];
 	public double[] update(FeatureMap map) {
-//		System.out.println(map.toString());
-		d[0] = map.get(type);
-//		System.out.println("Looking for "+type+" and got value: "+d[0]);
 		return d;
 	}
 }

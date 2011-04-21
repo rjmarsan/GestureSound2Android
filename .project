@@ -32,6 +32,16 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>PdCore86_jni_libpd_java</name>
+			<type>2</type>
+			<locationURI>_android_PdCore86_98f36211/jni/libpd/java</locationURI>
+		</link>
+		<link>
+			<name>PdCore86_src</name>
+			<type>2</type>
+			<locationURI>_android_PdCore86_98f36211/src</locationURI>
+		</link>
+		<link>
 			<name>WekaAndroid_src</name>
 			<type>2</type>
 			<locationURI>_android_WekaAndroid_7f7f950b/src</locationURI>

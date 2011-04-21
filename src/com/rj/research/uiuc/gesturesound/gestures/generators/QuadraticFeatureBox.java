@@ -8,6 +8,8 @@ import com.rj.research.uiuc.gesturesound.gestures.extractors.FeatureMap;
 public class QuadraticFeatureBox extends FeatureBox {
 	public static FeatureMap currentFeatures;
 	public static int FEATURE_BOX_LENGTH = 6;
+	public static int MAX_GENERATORS = 2;
+	public static int CURRENT_MAX_FEATURES_GENERATED = FEATURE_BOX_LENGTH * MAX_GENERATORS;
 	
 	FeatureExtractor extractor;
 	FeatureGenerator[] generators;
@@ -22,9 +24,12 @@ public class QuadraticFeatureBox extends FeatureBox {
 		float[] trendiness = p.getTrendiness();
 		
 		this.extractor = new FeatureExtractor();
-		this.generators = new FeatureGenerator[qualities.length];
-		for (int i=0; i<qualities.length; i++){
-			this.generators[i] = new QuadraticHistoryGenerator(qualities[i], FEATURE_BOX_LENGTH, trendiness[i]);
+		this.generators = new FeatureGenerator[MAX_GENERATORS];
+		for (int i=0; i < MAX_GENERATORS; i++){
+			if (qualities.length > i)
+				this.generators[i] = new QuadraticHistoryGenerator(qualities[i], FEATURE_BOX_LENGTH, trendiness[i]);
+			else
+				this.generators[i] = new FeatureGenerator(FeatureMap.NOP, FEATURE_BOX_LENGTH);
 		};
 		
 		featvec = new double[numFeaturesGenerated()];

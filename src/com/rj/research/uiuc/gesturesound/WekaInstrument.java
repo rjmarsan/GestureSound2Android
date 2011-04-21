@@ -282,7 +282,8 @@ public class WekaInstrument implements TouchListener  {
 	 */
 	public void touchDown(Cursor c) {
 		instrument.getInstrument().gestureStart();
-		extractormanager.touchDown(c);
+		Parameter[] params = this.instrument.getInstrumentParameters();
+		extractormanager.touchDown(c, params);
 		updateGenerator(c);
 	}
 	public void touchUp(Cursor c) {
@@ -321,7 +322,7 @@ public class WekaInstrument implements TouchListener  {
 	 */
 	public void updateGenerator(Cursor c) {
 		Parameter[] params = this.instrument.getInstrumentParameters();
-		double[] featurevector = extractormanager.makeFeatureVector(c);
+		double[][] featurevector = extractormanager.makeFeatureVector(c, params);
 		if (featurevector == null) return; //something went wrong. return now!
 		
 		if (mode == PERFORMING) {
