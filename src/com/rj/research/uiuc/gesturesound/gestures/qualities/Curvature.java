@@ -3,6 +3,8 @@ package com.rj.research.uiuc.gesturesound.gestures.qualities;
 import java.util.ArrayList;
 import java.util.List;
 
+import processing.core.PApplet;
+
 import Jama.Matrix;
 
 import com.rj.processing.mt.Cursor;
@@ -13,23 +15,19 @@ import com.rj.research.uiuc.gesturesound.gestures.extractors.FeatureMap;
 
 public class Curvature extends Quality {
 	public static String name="curvature";
+	public static float SCALE = 0.005f;
 
-//	KalmanFilter filter;
-	
-	double currentValue=0f;
 	ArrayList<double[]> pastValues;
 
 	
 	public Curvature() {
 		type = FeatureMap.CURV;
 		pastValues = new ArrayList<double[]>();
-//		filter = KalmanFilter.buildKF(0.2, 5, 10);
-//		filter.setX(new Matrix(new double[][]{{0.01}, {0.01}, {0.01}}));
-//		filter.predict();
+		setSmooth(0.3f);
 	}
 
 	@Override
-	public float update(Cursor in) {
+	public float getQuality(Cursor in) {
 		float val=0.0f;
 		
 		val = (float) (findCurvature(in)/(Math.PI));
@@ -48,13 +46,15 @@ public class Curvature extends Quality {
 			}
 			Point p2,p1,p0;
 			p0 = s[0];
-			p1 = Geometry.evalBezier(s,0.1f);
-			p2 = Geometry.evalBezier(s,0.2f);
+			p1 = Geometry.evalBezier(s,0.12f);
+			p2 = Geometry.evalBezier(s,0.24f);
 			val = (float) findCurvature(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
+			val = val * PApplet.dist(p0.x, p0.y, p2.x, p2.y);
 		}
 		
+		
 //		System.out.println("Curvature: "+val);
-		currentValue = val;
+		val = val*SCALE;
 		return val;
 	}
 		
@@ -101,11 +101,5 @@ public class Curvature extends Quality {
 	public static double getAngle(double x1, double y1, double x2, double y2) {
 		return Math.atan2(x1-x2, y1-y2);
 	}
-
-	@Override
-	public float getCurrentValue() {
-		return (float)currentValue;
-	}
-
 	
 }

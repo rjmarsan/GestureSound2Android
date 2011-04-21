@@ -8,7 +8,7 @@ import com.rj.research.uiuc.gesturesound.gestures.extractors.FeatureMap;
  *
  */
 public class JustHistoryGenerator extends FeatureGenerator {
-	public final static int LENGTH = 6;
+	public final static int LENGTH = 8;
 	public final static int TOTAL_LENGTH = LENGTH;
 	
 	public final static int INTERNAL_LENGTH = 1 << (LENGTH+1);
@@ -64,6 +64,8 @@ public class JustHistoryGenerator extends FeatureGenerator {
 				data[i] = avgness/size;
 			}
 		}
+		data[0]=0f;
+		data[1]=0f;//TEMPORARY: Testing removing the first few values
 		return data;
 	}
 	

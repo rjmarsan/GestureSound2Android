@@ -17,6 +17,7 @@ import android.view.ViewGroup.LayoutParams;
 import com.rj.processing.mt.MTManager;
 import com.rj.research.uiuc.gesturesound.android.HUDViewController;
 import com.rj.research.uiuc.gesturesound.audio.instruments.OSCInstrument;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.Lazy;
 import com.rj.research.uiuc.gesturesound.processing.TouchCanvas;
 
 
@@ -91,7 +92,11 @@ public class GestureSound2 extends PApplet {
     
     
     public void draw() {
-    	background(100);
+    	//horrible hack;
+    	Lazy.width = this.width;
+    	Lazy.height = this.height;
+
+    	background(15);
     	canvas.draw(this);
     }
     

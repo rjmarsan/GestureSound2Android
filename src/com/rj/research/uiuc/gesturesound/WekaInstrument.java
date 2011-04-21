@@ -16,6 +16,7 @@ import com.rj.research.uiuc.gesturesound.android.RemoteSolver2;
 import com.rj.research.uiuc.gesturesound.android.RemoteSolver2.RemoteSolverCallback;
 import com.rj.research.uiuc.gesturesound.audio.AudioManager;
 import com.rj.research.uiuc.gesturesound.audio.InstrumentManager;
+import com.rj.research.uiuc.gesturesound.audio.Parameter;
 import com.rj.research.uiuc.gesturesound.audio.instruments.PDSynth;
 import com.rj.research.uiuc.gesturesound.gestures.extractors.ExtractorManager;
 import com.rj.research.uiuc.gesturesound.listeners.InstrumentListener;
@@ -294,8 +295,7 @@ public class WekaInstrument implements TouchListener  {
 	}
 	@Override
 	public void touchAllUp(Cursor c) {
-		// TODO Auto-generated method stub
-		
+		extractormanager.allUp(c);
 	}
 	
 	
@@ -320,6 +320,7 @@ public class WekaInstrument implements TouchListener  {
 	 * 
 	 */
 	public void updateGenerator(Cursor c) {
+		Parameter[] params = this.instrument.getInstrumentParameters();
 		double[] featurevector = extractormanager.makeFeatureVector(c);
 		if (featurevector == null) return; //something went wrong. return now!
 		

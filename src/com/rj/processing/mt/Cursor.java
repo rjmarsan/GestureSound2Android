@@ -13,10 +13,14 @@ public class Cursor {
 	public float velY=0;
 	
 	public static final float VEL_AVG = 4;
-	public static final float MAX_VEL = 1f;
+	public static final float MAX_VEL = 10000f;
 	public static final float MIN_VEL = -MAX_VEL;
 	
-	public Cursor(Point p, int curId) {
+	public final MTManager manager;
+	
+
+	public Cursor(Point p, int curId, MTManager parent) {
+		manager = parent;
 		firstPoint = p;
 		currentPoint = p;
 		this.curId = curId;

@@ -2,14 +2,22 @@ package com.rj.research.uiuc.gesturesound.gestures.extractors;
 
 import com.rj.processing.mt.Cursor;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.Curvature;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.MTRelDistance;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.Quality;
-import com.rj.research.uiuc.gesturesound.gestures.qualities.Velocity;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.VelocityX;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.VelocityY;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.X;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.Y;
 
 public class FeatureExtractor {
 
 	Quality[] qualities = new Quality[] {
-			new Velocity(),
-			new Curvature()
+			new Curvature(),
+			new VelocityX(),
+			new VelocityY(),
+			new X(),
+			new Y(),
+			new MTRelDistance(),
 	};
 	
 	FeatureMap map;

@@ -9,6 +9,8 @@ public class FeatureMap {
 	public final static int VEL_Y = 3;
 	public final static int CURV = 4;
 	public final static int SPEED = 5;
+	public final static int MTREL_DIST = 8;
+	public final static int MTREL_VEL = 9;
 	
 	public double[] featurevec;
 	public int[] featuretypes;

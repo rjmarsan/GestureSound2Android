@@ -75,7 +75,7 @@ public class MTManager {
 
 		}
 		else {
-			c = new Cursor(new Point(x,y), pointerId);
+			c = new Cursor(new Point(x,y), pointerId, this);
 		}
 		cursors.set(index, c);
 		if (me.getAction() == MotionEvent.ACTION_UP) {

@@ -1,5 +1,7 @@
 package com.rj.research.uiuc.gesturesound.audio;
 
+import com.rj.research.uiuc.gesturesound.gestures.extractors.FeatureMap;
+
 public class Parameter {
 	String name;
 	String internal_name;
@@ -9,6 +11,10 @@ public class Parameter {
 	int type;
 	
 	boolean enabled = true;
+	
+	/** the lower the value, the less history is kept **/
+	float[] trendiness = {1f};
+	int[] qualities  = {FeatureMap.VEL_Y};
 	
 	//continuous parameters
 	float cont_min = 0;
@@ -147,6 +153,22 @@ public class Parameter {
 	
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+	
+	public float[] getTrendiness() {
+		return trendiness;
+	}
+	
+	public void setTrendiness(float[] trend) {
+		trendiness = trend;
+	}
+	
+	public void setQualities(int[] quals) {
+		qualities = quals;
+	}
+	
+	public int[] getQualities() {
+		return qualities;
 	}
 
 }
