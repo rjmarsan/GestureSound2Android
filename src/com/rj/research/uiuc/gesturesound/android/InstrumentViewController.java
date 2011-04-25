@@ -76,6 +76,12 @@ public class InstrumentViewController extends LinearLayout implements SettingsCh
 		param.setEnabled(enabled);
 		mInstrument.updated();
 	}
+
+
+	@Override
+	public void settingsEditedFeatures(Parameter param, int[] qualities) {
+		mInstrument.updated();
+	}
 	
 	
 }

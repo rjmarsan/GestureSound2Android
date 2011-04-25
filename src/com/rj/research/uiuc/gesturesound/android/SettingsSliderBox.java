@@ -1,7 +1,13 @@
 package com.rj.research.uiuc.gesturesound.android;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnMultiChoiceClickListener;
 import android.util.AttributeSet;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
@@ -11,15 +17,17 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 
 import com.rj.research.uiuc.gesturesound.R;
 import com.rj.research.uiuc.gesturesound.audio.Parameter;
+import com.rj.research.uiuc.gesturesound.gestures.extractors.FeatureMap;
 
 
-public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeListener, OnCheckedChangeListener {
+public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeListener, OnCheckedChangeListener, OnClickListener {
 	private final static int SLIDER_MAX = 100;
 	SeekBar seekbar;
 	TextView paramvalue;
 	TextView title;
 	CheckBox checkbox;
 	SettingsChangedListener callback;
+	Button editButton;
 	float max;
 	float min;
 	
@@ -46,6 +54,8 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 		checkbox = (CheckBox) this.findViewById(R.id.slider_checkbox);
 		checkbox.setChecked(true);
 		checkbox.setOnCheckedChangeListener(this);
+		editButton = (Button) this.findViewById(R.id.slider_editbutton);
+		editButton.setOnClickListener(this);
 
 	}
 	
@@ -105,6 +115,46 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 		param.setEnabled(arg1);
 		callback.settingsEnabledState(param, arg1);
+	}
+
+
+	@Override
+	public void onClick(View v) {
+		final String[] items = FeatureMap.names;
+		final int[] ids = param.getQualities();
+		final boolean[] enabled = new boolean[FeatureMap.options.length];
+		for (int i=0; i<FeatureMap.options.length; i++) {
+			enabled[i] = false;
+			for (int id : ids) if (id == FeatureMap.options[i]) enabled[i] = true;
+		}
+		final AlertDialog alert;
+		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+		builder.setTitle("Pick gesture qualities");
+		builder.setMultiChoiceItems(items, enabled, new OnMultiChoiceClickListener() {
+			public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+				enabled[which] = isChecked;
+			}
+		});
+		builder.setPositiveButton("Finish", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				int enabledcount = 0;
+				for (boolean yeah : enabled) if (yeah) enabledcount++;
+				int[] qualities = new int[enabledcount];
+				int qualitycount = 0;
+				for (int i=0; i<enabled.length; i++) {
+					if (enabled[i]) {
+						qualities[qualitycount] = FeatureMap.options[i];
+						qualitycount ++;
+					}
+				}
+				param.setQualities(qualities);
+				callback.settingsEditedFeatures(param, qualities);
+			}
+		});
+		builder.setNegativeButton("Cancel", null);
+		alert = builder.create();
+		alert.show();
+
 	}
 
 	

@@ -99,7 +99,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
 			android:layout_alignParentRight="true"
-			android:text="Hide"
+			android:background="@drawable/ic_menu_back"
 			/>
 
 		<Button
@@ -108,7 +108,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
 			android:layout_alignParentLeft="true"
-			android:text="New"
+			android:background="@android:drawable/ic_menu_add"
 			/>
 		<Button
 			android:id="@+id/save_button"
@@ -116,7 +116,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
 			android:layout_toRightOf="@+id/new_button"
-			android:text="Save"
+			android:background="@android:drawable/ic_menu_save"
 			/>
 		<Button
 			android:id="@+id/load_button"
@@ -124,7 +124,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
 			android:layout_toRightOf="@+id/save_button"
-			android:text="load"
+			android:background="@android:drawable/ic_menu_upload"
 			/>
 		
 		

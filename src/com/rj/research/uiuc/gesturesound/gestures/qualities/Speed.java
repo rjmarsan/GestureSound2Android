@@ -7,6 +7,7 @@ import com.rj.research.uiuc.gesturesound.gestures.extractors.FeatureMap;
 
 public class Speed extends Quality {
 	public static String name="speed";
+	public final static float SCALE = 7f;
 
 //	KalmanFilter filter;
 	
@@ -25,7 +26,7 @@ public class Speed extends Quality {
 			length =  Math.sqrt((p1.x-p2.x)*(p1.x-p2.x) + (p1.y-p2.y)*(p1.y-p2.y));
 		}
 		
-		return (float)length/Lazy.height;
+		return ((float)length)/Lazy.height*SCALE;
 	}
 
 }

@@ -4,6 +4,7 @@ import com.rj.processing.mt.Cursor;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.Curvature;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.MTRelDistance;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.Quality;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.Speed;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.VelocityX;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.VelocityY;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.X;
@@ -13,6 +14,7 @@ public class FeatureExtractor {
 
 	Quality[] qualities = new Quality[] {
 			new Curvature(),
+			new Speed(),
 			new VelocityX(),
 			new VelocityY(),
 			new X(),

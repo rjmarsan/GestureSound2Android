@@ -206,7 +206,7 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 	public void showhide() {
 		hidden = !hidden;
 		if (hidden) {
-			togglehide.setText("show");
+			togglehide.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.ic_menu_forward));
 			this.setLayoutParams(new LayoutParams(50, LayoutParams.FILL_PARENT));
 			newbutton.setVisibility(View.GONE);
 			savebutton.setVisibility(View.GONE);
@@ -216,7 +216,8 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 			instView.collapse();
 			
 		} else {
-			togglehide.setText("hide");
+			//togglehide.setText("hide");
+			togglehide.setBackgroundDrawable(getContext().getResources().getDrawable(R.drawable.ic_menu_back));
 			this.setLayoutParams(new LayoutParams(300, LayoutParams.FILL_PARENT));
 			newbutton.setVisibility(View.VISIBLE);
 			savebutton.setVisibility(View.VISIBLE);

@@ -13,6 +13,28 @@ public class FeatureMap {
 	public final static int MTREL_DIST = 8;
 	public final static int MTREL_VEL = 9;
 	
+	public final static int[] options = {
+		X,
+		Y,
+		VEL_X,
+		VEL_Y,
+		CURV,
+		SPEED,
+		MTREL_DIST,
+		MTREL_VEL,
+	};
+	
+	public final static String[] names = {
+		"X",
+		"Y",
+		"Velocity - X",
+		"Velocity - Y",
+		"Curvature",
+		"Speed",
+		"Multitouch - Distance",
+		"Multitouch - Velocity",
+	};
+	
 	public double[] featurevec;
 	public int[] featuretypes;
 	public FeatureMap(double[] vec, int[] types) {

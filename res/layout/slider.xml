@@ -10,6 +10,14 @@
         android:layout_alignParentTop="true"
     	android:layout_alignParentRight="true"
         />
+   <Button android:id="@+id/slider_editbutton"
+   		android:background="@android:drawable/ic_menu_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_alignParentTop="true"
+    	android:layout_toLeftOf="@+id/slider_checkbox"
+        />
+   
    <TextView
     	android:id="@+id/slider_value"
     	android:layout_width="35dip"
@@ -18,15 +26,15 @@
     	android:textSize="16dip"
     	android:gravity="right"
     	android:singleLine="true"
-    	android:layout_alignParentTop="true"
-    	android:layout_toLeftOf="@+id/slider_checkbox"
+    	android:layout_below="@+id/slide_bar"
+    	android:layout_toRightOf="@+id/slider_name"
     	/>
    <SeekBar
     	android:id="@+id/slide_bar"
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
     	android:layout_alignParentTop="true"
-    	android:layout_toLeftOf="@+id/slider_value"
+    	android:layout_toLeftOf="@+id/slider_editbutton"
     	/>    
     
     <TextView
