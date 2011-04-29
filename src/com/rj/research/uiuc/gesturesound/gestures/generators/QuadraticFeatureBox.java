@@ -27,7 +27,7 @@ public class QuadraticFeatureBox extends FeatureBox {
 		this.generators = new FeatureGenerator[MAX_GENERATORS];
 		for (int i=0; i < MAX_GENERATORS; i++){
 			if (qualities.length > i)
-				this.generators[i] = new QuadraticHistoryGenerator(qualities[i], FEATURE_BOX_LENGTH, trendiness[i]);
+				this.generators[i] = new QuadraticContinuousHistoryGenerator(qualities[i], FEATURE_BOX_LENGTH, trendiness[i], 1);
 			else
 				this.generators[i] = new FeatureGenerator(FeatureMap.NOP, FEATURE_BOX_LENGTH);
 		};

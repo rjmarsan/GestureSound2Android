@@ -1,19 +1,23 @@
 package com.rj.research.uiuc.gesturesound.processing;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 import com.rj.processing.mt.Cursor;
 import com.rj.processing.mt.MTManager;
 import com.rj.processing.mt.Point;
 import com.rj.processing.mt.TouchListener;
+import com.rj.research.uiuc.gesturesound.WekaInstrument;
+import com.rj.research.uiuc.gesturesound.audio.Parameter;
 import com.rj.research.uiuc.gesturesound.gestures.extractors.FeatureMap;
 import com.rj.research.uiuc.gesturesound.gestures.generators.QuadraticFeatureBox;
 
 public class TouchCanvas implements TouchListener {
 	MTManager m;
+	WekaInstrument weka;
 
-	private final static int[] CUR_TRAIL_STRK = {0,200,0};
-	private final static int[] CUR_TRAIL_FILL = {0,100,0};
+	private final static int[] CUR_TRAIL_STRK = {100,100,100};
+	private final static int[] CUR_TRAIL_FILL = {60,60,60};
 	private final static int[] GRID_STRK = {55,55,55};
 	private final static int[] GRID_FILL = {0,0,0,0};
 	private final static int GRID_LINES = 8;
@@ -21,12 +25,19 @@ public class TouchCanvas implements TouchListener {
 	private final static int[] GEST_VAL_FILL = {0,0,100};
 
 	
+	PFont font;
 	
-	public TouchCanvas(MTManager m) {
+	public TouchCanvas(MTManager m, WekaInstrument weka) {
 		this.m = m;
+		this.weka = weka;
 	}
 	
 	public void draw(PApplet p) {
+		if (font == null) {
+			font = p.loadFont("MyriadPro-Regular-30.vlw");
+			p.textFont(font);
+			//p.textMode(PApplet.SCREEN);
+		}
 		drawGrid(p);
 		drawCursorTrail(p);
 		drawFeatureStats(p);
@@ -55,15 +66,17 @@ public class TouchCanvas implements TouchListener {
 	private void drawCursorTrail(PApplet p) {
 		p.pushStyle();
 		p.rectMode(PApplet.CENTER);
+		p.ellipseMode(PApplet.CENTER);
 		
 		
 		synchronized (m.cursors) {
-			Cursor lastCursor = null;
+			Cursor firstCursor = null;
+			for (Cursor c : m.cursors)
+				if (c != null && c.curId == 0) firstCursor = c;
 			for (Cursor c : m.cursors) {
 				if (c != null && c.currentPoint != null) {
 					p.stroke(CUR_TRAIL_STRK[0],CUR_TRAIL_STRK[1],CUR_TRAIL_STRK[2]);
 					p.fill(CUR_TRAIL_FILL[0],CUR_TRAIL_FILL[1],CUR_TRAIL_FILL[2]);
-					p.rect(c.currentPoint.x, c.currentPoint.y, 50, 50);
 					Point nextPoint = null;
 					final int max = Math.min(20, c.points.size()-2);
 					for (int x = 0; x < max; x++) {
@@ -74,12 +87,36 @@ public class TouchCanvas implements TouchListener {
 						}
 						nextPoint = point;
 					}
-					if (lastCursor != null) {
+					if (firstCursor != null) {
 						p.stroke(0,200,200);
 						p.fill(0,100,100);
-						p.line(lastCursor.currentPoint.x, lastCursor.currentPoint.y, c.currentPoint.x, c.currentPoint.y);
+						p.line(firstCursor.currentPoint.x, firstCursor.currentPoint.y, c.currentPoint.x, c.currentPoint.y);
 					}
-					lastCursor = c;
+					
+					p.noFill();
+					if (c.curId == 0) {
+						p.stroke(220,220,220);
+					} else {
+						float x = 200;
+						switch (c.curId % 4){
+						case 0:
+							p.stroke(x/10f,x,x);
+							break;
+						case 1:
+							p.stroke(x,x,x/10f);
+							break;
+						case 2:
+							p.stroke(x,x/10f,x);
+							break;
+						case 3:
+							p.stroke(x*1.2f,x/10f,x/10f);
+							break;
+						}
+					}
+					p.ellipse(c.currentPoint.x, c.currentPoint.y, p.width/13f, p.width/13f);
+					p.text(""+c.curId,c.currentPoint.x-p.width/26f, c.currentPoint.y-p.width/26f);
+
+
 				}
 			}
 		}
@@ -105,6 +142,12 @@ public class TouchCanvas implements TouchListener {
 		}
 		
 		p.popStyle();
+	}
+	
+	private void drawParameters(PApplet p) {
+		Parameter[] params = weka.instrument.getInstrumentParameters();
+		FeatureMap map = QuadraticFeatureBox.currentFeatures;
+		
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class ExtractorManager {
 		if (featureboxMap.containsKey(c)) {
 			return featureboxMap.get(c).makeFeatureVectors(c);
 		} else {
-			if (featureboxMap.isEmpty()) {
+			if (c.curId == 0) {
 				featureboxMap.put(c, new FeatureBoxes(c, params));
 				return featureboxMap.get(c).makeFeatureVectors(c);
 			} else {
@@ -31,7 +31,7 @@ public class ExtractorManager {
 	
 	
 	public void touchDown(Cursor c, Parameter[] params) {
-		if (featureboxMap.isEmpty()) 
+		if (c.curId == 0) 
 			featureboxMap.put(c, new FeatureBoxes(c, params));
 	}
 	

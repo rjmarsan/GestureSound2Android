@@ -10,8 +10,12 @@ public class FeatureMap {
 	public final static int VEL_Y = 3;
 	public final static int CURV = 4;
 	public final static int SPEED = 5;
-	public final static int MTREL_DIST = 8;
-	public final static int MTREL_VEL = 9;
+	public final static int MTREL_DIST = 6;
+	public final static int MTREL_DIST_DIFF = 7;
+	public final static int MTREL_ARC = 8;
+	public final static int MTREL_ARC_DIFF = 9;
+	public final static int MTREL_VEL_DIST = 10;
+	public final static int MTREL_VEL_ARC = 11;
 	
 	public final static int[] options = {
 		X,
@@ -21,7 +25,11 @@ public class FeatureMap {
 		CURV,
 		SPEED,
 		MTREL_DIST,
-		MTREL_VEL,
+		MTREL_DIST_DIFF,
+		MTREL_ARC,
+		MTREL_ARC_DIFF,
+		MTREL_VEL_DIST,
+		MTREL_VEL_ARC,
 	};
 	
 	public final static String[] names = {
@@ -32,7 +40,25 @@ public class FeatureMap {
 		"Curvature",
 		"Speed",
 		"Multitouch - Distance",
-		"Multitouch - Velocity",
+		"Multitouch - Distance Diference",
+		"Multitouch - Arc",
+		"Multitouch - Arc Difference",
+		"Multitouch - Speed (Relative)",
+		"Multitouch - Speed of rotation",
+	};
+	public final static String[] shortnames = {
+		"X",
+		"Y",
+		"Vel. X",
+		"Vel. Y",
+		"Curve",
+		"Speed",
+		"MT Dist.",
+		"MT Dist. Diff.",
+		"MT Arc",
+		"MT Arc Diff.",
+		"MT Speed",
+		"MT Rot.",
 	};
 	
 	public double[] featurevec;

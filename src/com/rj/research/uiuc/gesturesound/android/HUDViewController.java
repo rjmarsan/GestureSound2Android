@@ -18,8 +18,10 @@ import android.widget.Toast;
 
 import com.rj.research.uiuc.gesturesound.R;
 import com.rj.research.uiuc.gesturesound.WekaInstrument;
+import com.rj.research.uiuc.gesturesound.audio.InstrumentManager;
 import com.rj.research.uiuc.gesturesound.audio.Parameter;
 import com.rj.research.uiuc.gesturesound.audio.instruments.Instrument;
+import com.rj.research.uiuc.gesturesound.audio.instruments.PDSynth;
 import com.rj.research.uiuc.gesturesound.listeners.InstrumentListener;
 import com.rj.research.uiuc.gesturesound.listeners.WekaClassifyListener;
 import com.rj.research.uiuc.gesturesound.listeners.WekaInstListener;
@@ -128,16 +130,24 @@ public class HUDViewController extends RelativeLayout implements WekaClassifyLis
 		newbutton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-				builder.setTitle("Name?");
-				builder.setMessage("Pick a name for the instrument");
+				builder.setTitle("New Weka Instrument");
+				//builder.setMessage("Pick a name and instrument");
 				final EditText text = new EditText(getContext());
 				builder.setView(text);
-				builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {  
+				final String[] items = InstrumentManager.getInstruments();
+				final String[] selecteditem = new String[] {PDSynth.name};
+				builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+				    public void onClick(DialogInterface dialog, int item) {
+				        selecteditem[0] = items[item];
+				    }
+				});
+				builder.setPositiveButton("Create", new DialogInterface.OnClickListener() {  
 					public void onClick(DialogInterface dialog, int whichButton) {  
 					  String value = text.getText().toString();  
-					  	weka.makeNewWekaInstrument(value);
+					  	weka.makeNewWekaInstrument(value, selecteditem[0]);
 					}  
-					}); 
+				});
+				builder.setNegativeButton("Cancel", null);
 				AlertDialog alert = builder.create();
 				alert.show();
 			}	

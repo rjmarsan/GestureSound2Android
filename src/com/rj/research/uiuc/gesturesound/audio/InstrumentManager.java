@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Set;
 
 import com.rj.research.uiuc.gesturesound.WekaInstrument;
 import com.rj.research.uiuc.gesturesound.audio.instruments.Instrument;
@@ -19,14 +20,28 @@ public class InstrumentManager {
 
 	
 	Instrument currentInstrument;
-	HashMap<String, Class<?>> possibleInstruments;
-	
-	public InstrumentManager(WekaInstrument parent) {
-		this.parent = parent;
+	public static HashMap<String, Class<?>> possibleInstruments;
+	static {
 		possibleInstruments = new HashMap<String, Class<?>>();
 		possibleInstruments.put(OSCInstrument.name, OSCInstrument.class);
 		possibleInstruments.put(SimplePDInstrument.name, SimplePDInstrument.class);
 		possibleInstruments.put(PDSynth.name, PDSynth.class);
+	}
+	
+	public static String[] getInstruments() {
+		String[] instruments = new String[possibleInstruments.keySet().size()];
+		System.out.println("Instruments length: "+instruments.length);
+		Set<String> keyset = possibleInstruments.keySet();
+		int count = 0;
+		for (String key : keyset) {
+			instruments[count] = key;
+			count++;
+		}
+		return instruments;
+	}
+	
+	public InstrumentManager(WekaInstrument parent) {
+		this.parent = parent;
 	}
 	
 	public void saveCurrentInstToFolder(File folder) throws IOException {

@@ -84,12 +84,14 @@ public class WekaInstrument implements TouchListener  {
 			makeNewWekaInstrument("Test instrument 1");
 		}
 	}
-	
 	public void makeNewWekaInstrument(String name) {
+		makeNewWekaInstrument(name,PDSynth.name);
+	}
+	public void makeNewWekaInstrument(String name, String instrumentname) {
 		eventmanager.fireLoadStartedEvent();
 		this.name = name;
 		this.saveFolder = new File(searchFolder, name);
-		instrument.setInstrument(PDSynth.name);
+		instrument.setInstrument(instrumentname);
 		int in = extractormanager.getFeatureVectorSize();
 		int out = instrument.getInstrumentParameters().length;
 		this.wekamanager = new WekinatorManager(in,out);
@@ -281,7 +283,7 @@ public class WekaInstrument implements TouchListener  {
 	 *                                                             SOUND!
 	 */
 	public void touchDown(Cursor c) {
-		instrument.getInstrument().gestureStart();
+		if (mode == TRAINING || mode == PERFORMING) instrument.getInstrument().gestureStart();
 		Parameter[] params = this.instrument.getInstrumentParameters();
 		extractormanager.touchDown(c, params);
 		updateGenerator(c);
@@ -289,7 +291,7 @@ public class WekaInstrument implements TouchListener  {
 	public void touchUp(Cursor c) {
 		extractormanager.touchUp(c);
 		//updateGenerator(c);
-		instrument.getInstrument().gestureStop();
+		if (mode == TRAINING || mode == PERFORMING) instrument.getInstrument().gestureStop();
 	}
 	public void touchMoved(Cursor c) {
 		updateGenerator(c);
@@ -326,9 +328,9 @@ public class WekaInstrument implements TouchListener  {
 		if (featurevector == null) return; //something went wrong. return now!
 		
 		if (mode == PERFORMING) {
-			System.out.println("Performing!");
+			//System.out.println("Performing!");
 			double[] paramvector = wekamanager.classify(featurevector);
-			for (double d : paramvector) System.out.println("D:"+d);
+			//for (double d : paramvector) System.out.println("D:"+d);
 			instrument.setNewParameters(paramvector, false);
 			eventmanager.fireWekaClassifyEvent(paramvector);
 		}

@@ -22,6 +22,8 @@ import com.rj.research.uiuc.gesturesound.processing.TouchCanvas;
 
 
 public class GestureSound2 extends PApplet {
+	@Override
+	public String sketchRenderer() { return PApplet.OPENGL;	}
 	WekaInstrument instrument;
 	HUDViewController hud;
 	TouchCanvas canvas;
@@ -61,7 +63,7 @@ public class GestureSound2 extends PApplet {
     	hud.setWeka(instrument);
     }
     public void setupCanvas() {
-    	canvas = new TouchCanvas(mtManager);
+    	canvas = new TouchCanvas(mtManager, instrument);
     	mtManager.addTouchListener(canvas);
     }
     

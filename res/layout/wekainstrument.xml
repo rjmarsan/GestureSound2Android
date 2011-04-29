@@ -79,6 +79,7 @@
 			android:layout_height="wrap_content"
 			android:layout_below="@+id/instrument_settings"
 			android:layout_alignParentLeft="true"
+			android:visibility="gone"
 			android:maxLines="4"
 			android:text="debug view!"
 			/>

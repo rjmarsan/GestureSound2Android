@@ -18,19 +18,17 @@ public class MTRelDistance extends Quality {
 	@Override
 	public float getQuality(Cursor in) {
 		if (in.curId == 0 && in.currentPoint != null) { //we're the first cursor id
-			Cursor second = null;
+			float avgdist = 0;
+			float count = 0;
 			for (Cursor c : in.manager.cursors) {
 				if (c != null && c.curId != 0 && c.currentPoint != null) {
-					second = c; //we found the second cursor!
-					float distance = PApplet.dist(in.currentPoint.x, in.currentPoint.y, second.currentPoint.x, second.currentPoint.y);
-					return distance/Lazy.height;
-					
+					count = count + 1;
+					avgdist += PApplet.dist(in.currentPoint.x, in.currentPoint.y, c.currentPoint.x, c.currentPoint.y);
 				}
 			}
-		} else {
-			return 0f;
-		}
-		return 0f;
+			return avgdist == 0 ? Float.NEGATIVE_INFINITY : avgdist/count/Lazy.height;
+		} 
+		return Float.NEGATIVE_INFINITY;
 		
 		
 	}

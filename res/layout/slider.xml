@@ -7,14 +7,14 @@
    <CheckBox android:id="@+id/slider_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
-        android:layout_alignParentTop="true"
+    	android:layout_alignParentTop="true"
     	android:layout_alignParentRight="true"
         />
    <Button android:id="@+id/slider_editbutton"
    		android:background="@android:drawable/ic_menu_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
-        android:layout_alignParentTop="true"
+    	android:layout_alignParentTop="true"
     	android:layout_toLeftOf="@+id/slider_checkbox"
         />
    
@@ -26,15 +26,15 @@
     	android:textSize="16dip"
     	android:gravity="right"
     	android:singleLine="true"
-    	android:layout_below="@+id/slide_bar"
-    	android:layout_toRightOf="@+id/slider_name"
+        android:layout_above="@+id/slide_bar"
+    	android:layout_alignParentLeft="true"
     	/>
    <SeekBar
     	android:id="@+id/slide_bar"
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
-    	android:layout_alignParentTop="true"
-    	android:layout_toLeftOf="@+id/slider_editbutton"
+        android:layout_below="@+id/slider_editbutton"
+    	android:layout_alignParentLeft="true"
     	/>    
     
     <TextView
@@ -42,9 +42,17 @@
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	android:text="param1"
-    	android:layout_below="@+id/slide_bar"
+        android:layout_above="@+id/slide_bar"
+    	android:layout_toRightOf="@+id/slider_value"
     	/>
-    	
+    <TextView
+    	android:id="@+id/slider_map"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:text="Vel. Y"
+        android:layout_above="@+id/slide_bar"
+    	android:layout_toLeftOf="@+id/slider_editbutton"
+    	/>    	
 
    
 

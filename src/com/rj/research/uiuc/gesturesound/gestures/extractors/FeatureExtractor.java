@@ -2,7 +2,12 @@ package com.rj.research.uiuc.gesturesound.gestures.extractors;
 
 import com.rj.processing.mt.Cursor;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.Curvature;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.MTRelArc;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.MTRelArcDiff;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.MTRelDistance;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.MTRelDistanceDiff;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.MTRelVelocityArc;
+import com.rj.research.uiuc.gesturesound.gestures.qualities.MTRelVelocityDist;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.Quality;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.Speed;
 import com.rj.research.uiuc.gesturesound.gestures.qualities.VelocityX;
@@ -20,6 +25,11 @@ public class FeatureExtractor {
 			new X(),
 			new Y(),
 			new MTRelDistance(),
+			new MTRelDistanceDiff(),
+			new MTRelArc(),
+			new MTRelArcDiff(),
+			new MTRelVelocityDist(),
+			new MTRelVelocityArc(),
 	};
 	
 	FeatureMap map;
@@ -33,7 +43,7 @@ public class FeatureExtractor {
 	public FeatureMap makeFeatureMap(Cursor c) {
 		for (int i=0; i<qualities.length; i++) {
 			map.featurevec[i] = qualities[i].update(c);
-			System.out.println(""+qualities[i].name+": "+map.featurevec[i]);
+			//System.out.println(""+qualities[i].name+": "+map.featurevec[i]);
 		}
 		return map;
 	}

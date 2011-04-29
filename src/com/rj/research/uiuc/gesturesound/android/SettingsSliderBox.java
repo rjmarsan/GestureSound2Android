@@ -25,6 +25,7 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 	SeekBar seekbar;
 	TextView paramvalue;
 	TextView title;
+	TextView maptext;
 	CheckBox checkbox;
 	SettingsChangedListener callback;
 	Button editButton;
@@ -51,6 +52,8 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 		title.setText(p.getName());
 		paramvalue = (TextView) this.findViewById(R.id.slider_value);
 		paramvalue.setText(p.getValue()+"");
+		maptext = (TextView) this.findViewById(R.id.slider_map);
+		updateMapText();
 		checkbox = (CheckBox) this.findViewById(R.id.slider_checkbox);
 		checkbox.setChecked(true);
 		checkbox.setOnCheckedChangeListener(this);
@@ -103,11 +106,27 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 	public void collapse() {
 		seekbar.setVisibility(GONE);
 		title.setVisibility(GONE);
+		maptext.setVisibility(GONE);
+		editButton.setVisibility(GONE);
+		checkbox.setVisibility(GONE);
 	}
 	
 	public void expand() {
 		seekbar.setVisibility(VISIBLE);
 		title.setVisibility(VISIBLE);
+		maptext.setVisibility(VISIBLE);
+		editButton.setVisibility(VISIBLE);
+		checkbox.setVisibility(VISIBLE);
+	}
+	
+	private void updateMapText() {
+		int[] qualities = param.getQualities();
+		String qualstr = "";
+		for (int i = 0; i<qualities.length; i++) {
+			qualstr += FeatureMap.shortnames[qualities[i]];
+			if (i!=qualities.length-1) qualstr += "\n";
+		}
+		maptext.setText(qualstr);
 	}
 
 
@@ -148,6 +167,7 @@ public class SettingsSliderBox extends SettingsBox implements OnSeekBarChangeLis
 					}
 				}
 				param.setQualities(qualities);
+				updateMapText();
 				callback.settingsEditedFeatures(param, qualities);
 			}
 		});

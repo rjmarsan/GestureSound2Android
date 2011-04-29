@@ -24,15 +24,17 @@ public class MTManager {
 	public void addTouchListener(TouchListener t) {
 		if (t == null) {
 			System.out.println("Hey jerk! Quit trying to add a null touch listener to MTManager");
+			return;
 		}
 		listeners.add(t);
 	}
 	
 	public void surfaceTouchEvent(MotionEvent me) {
 		synchronized (cursors) {
-			int numPointers = me.getPointerCount();
+			final int numPointers = me.getPointerCount();
 			if (numPointers == 0) {
 				//callback.touchEvent(me, 0, 0,0,0,0,0);
+				fireTouchAllUp(me, null);
 			}
 			for (int i = 0; i < numPointers; i++) {
 				touchEvent(me, i);
@@ -41,16 +43,18 @@ public class MTManager {
 				cursors.clear();
 			}
 			if (me.getPointerCount() < cursors.size()) {
-				for (int i = 0; i < cursors.size(); i++) {
-					int pointerId = me.getPointerId(i);
-					int index = me.findPointerIndex(pointerId);
-					if (index < 0) {
-						cursors.remove(i);
+				try {
+					for (int i = 0; i < cursors.size(); i++) {
+						final int pointerId = me.getPointerId(i);
+						final int index = me.findPointerIndex(pointerId);
+						if (index < 0) {
+							cursors.remove(i);
+						}
+						else if (pointerId != index && i >= 1) {
+							cursors.remove(i-1);
+						}
 					}
-					else if (pointerId != index && i >= 1) {
-						cursors.remove(i-1);
-					}
-				}
+				} catch (final ArrayIndexOutOfBoundsException e) {}
 			}
 		}
 	}
@@ -89,7 +93,7 @@ public class MTManager {
 
 		float size = me.getSize(i);
 
-		fireTouchEvent(me, c);
+		fireTouchEvent(me, c, pointerId);
 	}
 
 	public void maybeAddCapacity(ArrayList<?> something, int index) {
@@ -103,21 +107,41 @@ public class MTManager {
 	}
 	
 	
-	public void fireTouchEvent(MotionEvent me, Cursor c) {
-		if (me.getAction() == MotionEvent.ACTION_DOWN) {
-			fireTouchDown(me, c);
+//	public void fireTouchEvent(MotionEvent me, Cursor c) {
+//		if (me.getAction() == MotionEvent.ACTION_DOWN) {
+//			fireTouchDown(me, c);
+//		}
+//		else if (me.getAction() == me.ACTION_MOVE) {
+//			fireTouchMoved(me, c);
+//		}
+//		else if (me.getAction() == me.ACTION_UP) {
+//			fireTouchUp(me, c);
+//		}
+//		
+//		if (me.getPointerCount() == 1 && me.getAction() == me.ACTION_UP) {//if the final finger is lifted...
+//			fireTouchAllUp(me, c);
+//		}	
+//	}
+	public void fireTouchEvent(final MotionEvent me, final Cursor c, final int index) {
+		final int meaction = me.getAction();
+		final int meactionmasked = me.getActionMasked();
+		if (meaction == MotionEvent.ACTION_DOWN || meactionmasked == MotionEvent.ACTION_POINTER_DOWN) {
+			if (index == me.getActionIndex())
+				fireTouchDown(me, c);
 		}
-		else if (me.getAction() == me.ACTION_MOVE) {
+		if (meaction == MotionEvent.ACTION_MOVE) {
 			fireTouchMoved(me, c);
 		}
-		else if (me.getAction() == me.ACTION_UP) {
-			fireTouchUp(me, c);
+		if (meaction == MotionEvent.ACTION_UP || meactionmasked == MotionEvent.ACTION_POINTER_UP) {
+			if (index == me.getActionIndex())
+				fireTouchUp(me, c);
 		}
 		
-		if (me.getPointerCount() == 1 && me.getAction() == me.ACTION_UP) {//if the final finger is lifted...
+		if (me.getPointerCount() == 1 && meaction == me.ACTION_UP) {//if the final finger is lifted...
 			fireTouchAllUp(me, c);
 		}	
 	}
+
 	
 	
 
